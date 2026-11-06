@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./src/*"]
     }
-  }
+  },
+  "include": ["src/**/*.js", "src/**/*.jsx", "next.config.mjs"],
+  "exclude": ["node_modules", ".next"]
 }

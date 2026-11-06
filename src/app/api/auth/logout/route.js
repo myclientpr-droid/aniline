@@ -1,0 +1,20 @@
+import { NextResponse } from 'next/server';
+import { SESSION_COOKIE } from '@/lib/session';
+
+export const runtime = 'nodejs';
+
+export async function POST() {
+    const response = NextResponse.json({ ok: true });
+    response.cookies.set(SESSION_COOKIE.name, '', {
+        ...SESSION_COOKIE.options,
+        maxAge: 0,
+    });
+    return response;
+}
+
+export function GET() {
+    return NextResponse.json(
+        { ok: false, error: 'Method not allowed.' },
+        { status: 405 }
+    );
+}

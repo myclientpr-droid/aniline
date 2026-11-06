@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# AniLine — Premium Cinematic Production Website
 
-## Getting Started
+Rohingya-led videography, photography, and visual production company website.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Next.js (App Router, JavaScript only)
+- React Server Components by default
+- Tailwind CSS v4 (CSS-first config)
+- MongoDB (content & inquiries)
+- Cloudinary (media delivery)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Local Development
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+1. Copy `.env.example` to `.env.local` and fill in credentials.
+2. `npm install`
+3. `npm run dev`
+4. Open `http://localhost:3000`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts
 
-## Learn More
+- `npm run dev` — Development server
+- `npm run build` — Production build
+- `npm run lint` — ESLint check
+- `npm run format` — Prettier write
 
-To learn more about Next.js, take a look at the following resources:
+## Admin authentication
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Set `AUTH_SECRET` to a random secret of at least 32 characters in `.env.local`.
+No owner credentials belong in the environment. Open `/admin/signup` and create
+an account: the first account created is stored in MongoDB with the owner role,
+and every account created afterwards is a member. Visitors can also self-register
+from the same page and will always receive the member role.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The owner owns every write in the panel: creating and editing content, uploads,
+inquiries, settings, and member accounts. Members are read-only — they can open
+the content lists (`/admin/projects`, `/admin/services`, `/admin/team`,
+`/admin/clients`, `/admin/photos`) to review what is there, but every create,
+edit and delete view redirects them back to the list, and the dashboard,
+inquiries, settings and account pages are owner-only.
 
-## Deploy on Vercel
+The owner can create and remove member accounts under **Admin → Settings**.
+Visitors can also self-register from the admin sign-up page; signup always
+assigns the member role and can never create or promote an owner. Member
+passwords must be at least 12 characters.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Design Tokens
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Token      | Value     |
+| ---------- | --------- |
+| Deep Navy  | `#00133E` |
+| Orange     | `#FEA500` |
+| Slate Grey | `#6B7280` |
+| Light Grey | `#F3F4F6` |
+| Dark Navy  | `#000D2B` |
+
+## Rules
+
+- **No TypeScript** — `.js` and `.jsx` only
+- **No secrets in repo** — use `.env.local`
+- **Server Components by default** — add `'use client'` only when needed
