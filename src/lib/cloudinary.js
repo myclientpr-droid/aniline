@@ -35,13 +35,18 @@ export function buildImageUrl(publicId, opts = {}) {
         format = 'auto',
     } = opts;
 
+    // Cloudinary rejects c_fit combined with g_auto (HTTP 400), so only apply
+    // gravity for the crops that support it.
+    const gravityCrops = new Set(['fill', 'lfill', 'thumb', 'crop', 'auto']);
+    const usesGravity = gravityCrops.has(crop);
+
     const transforms = [
         `f_${format}`,
         `q_${quality}`,
         width ? `w_${width}` : null,
         height ? `h_${height}` : null,
         width || height ? `c_${crop}` : null,
-        width || height ? `g_${gravity}` : null,
+        (width || height) && usesGravity ? `g_${gravity}` : null,
     ].filter(Boolean);
 
     return `${BASE}/image/upload/${transforms.join(',')}/${publicId}`;

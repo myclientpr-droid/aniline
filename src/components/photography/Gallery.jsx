@@ -56,7 +56,7 @@ export default function Gallery({ photos }) {
     return (
         <>
             {/* Grid */}
-            <ul className="tile-grid grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
+            <ul className="tile-grid grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
                 {photos.map((photo, i) => {
                     const thumb = buildImageUrl(photo.publicId, { width: 600, crop: 'fill' });
                     const alt = photo.alt || photo.title || `Photograph ${i + 1}`;
@@ -75,7 +75,7 @@ export default function Gallery({ photos }) {
                                         src={thumb}
                                         alt={alt}
                                         fill
-                                        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 50vw"
+                                        sizes="(min-width: 768px) 33vw, 100vw"
                                         className="object-cover transition-transform duration-500 ease-[var(--ease-cinematic)] group-hover:scale-[1.03]"
                                     />
                                 </button>

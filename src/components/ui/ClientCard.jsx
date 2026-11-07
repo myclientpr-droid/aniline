@@ -42,7 +42,7 @@ export default function ClientCard({ client }) {
                 {/* Logo or initial mark */}
                 <div className="tilt-lift-2 h-20 flex items-center">
                     {hasLogo ? (
-                        <div className="relative h-16 w-32">
+                        <div className="relative h-16 w-32 overflow-hidden rounded-[8px]">
                             <Image
                                 src={logoSrc}
                                 alt={logo.alt || name}
