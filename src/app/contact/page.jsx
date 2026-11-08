@@ -2,11 +2,13 @@ import Container from '@/components/ui/Container';
 import PageHero from '@/components/layout/PageHero';
 import InquiryForm from '@/components/forms/InquiryForm';
 import CtaSection from '@/components/ui/CtaSection';
+import PageSchema from '@/components/seo/PageSchema';
 import { buildMetadata } from '@/lib/seo';
 import { SITE, CONTACT_PAGE } from '@/lib/site';
+import { SOCIAL_META } from '@/components/ui/SocialIcon';
 
 export const metadata = buildMetadata({
-    title: 'Contact',
+    title: 'Contact AniLine | Video & Photo Production',
     description:
         'Get in touch with AniLine \u2014 a Rohingya-led video production and photography studio established in 2020.',
     path: '/contact',
@@ -21,6 +23,12 @@ export default function ContactPage() {
 
     return (
         <>
+            <PageSchema
+                path="/contact"
+                title="Contact AniLine | Video & Photo Production"
+                description={metadata.description}
+                type="ContactPage"
+            />
             <PageHero eyebrow={hero.eyebrow} title={hero.title} subheading={hero.subheading} />
 
             <section className="section-padding bg-white">
@@ -60,9 +68,17 @@ export default function ContactPage() {
                                                 href={`https://wa.me/${whatsappDigits}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-navy hover:text-orange transition-colors"
+                                                className="inline-flex items-center gap-2 text-navy hover:text-orange transition-colors"
                                             >
-                                                Message us on WhatsApp
+                                                <svg
+                                                    viewBox="0 0 24 24"
+                                                    fill="currentColor"
+                                                    className="h-4 w-4 text-[#25d366]"
+                                                    aria-hidden="true"
+                                                >
+                                                    <path d={SOCIAL_META.whatsapp.path} />
+                                                </svg>
+                                                {whatsapp}
                                             </a>
                                         </li>
                                     )}

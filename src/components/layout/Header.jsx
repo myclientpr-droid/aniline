@@ -25,11 +25,12 @@ export default function Header() {
                         <div>
                             <Image
                                 src="/aniline-5555x1330.png"
-                                alt="Logo"
+                                alt=""
                                 width={120}
                                 height={30}
                                 className='w-auto h-auto' />
-                            <h1 className="sr-only">{SITE.name}</h1>
+                            {/* Not an h1: every page's hero owns the one h1. */}
+                            <span className="sr-only">{SITE.name}</span>
                         </div>
                     </Link>
 

@@ -1,15 +1,12 @@
 import { manrope } from '@/lib/fonts';
-import { SITE } from '@/lib/site';
-import { buildMetadata, organizationJsonLd } from '@/lib/seo';
+import { siteMetadata } from '@/lib/seo';
+import { siteGraph } from '@/lib/schema';
+import JsonLd from '@/components/seo/JsonLd';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import './globals.css';
 
-export const metadata = buildMetadata({
-  title: null,
-  description: SITE.description,
-  path: '/',
-});
+export const metadata = siteMetadata();
 
 export const viewport = {
   themeColor: '#00133E',
@@ -19,14 +16,15 @@ export const viewport = {
 };
 
 export default function RootLayout({ children }) {
-  const jsonLd = organizationJsonLd();
-
   return (
     <html lang="en" className={manrope.variable}>
       <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        <JsonLd data={siteGraph()} />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="AniLine Journal"
+          href="/journal/rss.xml"
         />
         {/* Revealed sections start hidden for Motion; without JS they must never stay hidden. */}
         <noscript>

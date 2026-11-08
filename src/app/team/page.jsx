@@ -1,14 +1,17 @@
 import Container from '@/components/ui/Container';
 import PageHero from '@/components/layout/PageHero';
 import TeamCard from '@/components/ui/TeamCard';
+import TiltField from '@/components/motion/TiltField';
 import CtaSection from '@/components/ui/CtaSection';
 import Button from '@/components/ui/Button';
+import PageSchema from '@/components/seo/PageSchema';
 import { listPublishedTeamMembers } from '@/lib/data/team';
 import { buildMetadata } from '@/lib/seo';
+import { personNodes } from '@/lib/schema';
 import { TEAM_PAGE } from '@/lib/site';
 
 export const metadata = buildMetadata({
-    title: 'Our Team',
+    title: 'Our Team | AniLine Production Studio',
     description:
         'Meet the four-member AniLine team \u2014 a Rohingya-led video production and photography studio established in 2020.',
     path: '/team',
@@ -29,8 +32,18 @@ export default async function TeamPage() {
     const members = real ?? fallbackMembers;
     const hasReal = Array.isArray(real) && real.length > 0;
 
+    // Placeholder rows are never published as people; only real, role-carrying members are.
+    const people = hasReal ? personNodes(real) : [];
+
     return (
         <>
+            <PageSchema
+                path="/team"
+                title="Our Team | AniLine Production Studio"
+                description={metadata.description}
+                type="CollectionPage"
+                nodes={people}
+            />
             {/* Hero */}
             <PageHero
                 eyebrow={hero.eyebrow}
@@ -41,13 +54,15 @@ export default async function TeamPage() {
             {/* Team grid */}
             <section className="section-padding bg-white">
                 <Container>
-                    <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-                        {members.map((member, i) => (
-                            <li key={String(member._id)} className={`rise rise-${(i % 4) + 1}`}>
-                                <TeamCard member={member} />
-                            </li>
-                        ))}
-                    </ul>
+                    <TiltField>
+                        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                            {members.map((member, i) => (
+                                <li key={String(member._id)} className={`rise rise-${(i % 4) + 1}`}>
+                                    <TeamCard member={member} />
+                                </li>
+                            ))}
+                        </ul>
+                    </TiltField>
 
                     {!hasReal && (
                         <p className="text-slate text-sm text-center mt-10">

@@ -1,54 +1,93 @@
 import { listPublishedProjectSlugs } from '@/lib/data/projects';
 import { listPublishedServices } from '@/lib/data/services';
-import { SITE } from '@/lib/site';
+import { listRoles } from '@/content/roles';
+import { listArticles } from '@/content/journal';
+import { CONTENT_UPDATED, LEGAL, SITE } from '@/lib/site';
 
 /**
  * Next.js MetadataRoute.Sitemap handler.
+ *
+ * `lastModified` comes from content, never from the clock: a sitemap that says "now" on every
+ * request tells Google every URL changed every time it asks, and teaches it to trust none of it.
  * @returns {Promise<import('next').MetadataRoute.Sitemap>}
  */
 export default async function sitemap() {
-    const now = new Date();
+  const contentUpdated = new Date(`${CONTENT_UPDATED}T00:00:00Z`);
+  const legalUpdated = new Date(`${LEGAL.effectiveDate}T00:00:00Z`);
+  const fallbackModified = contentUpdated;
 
-    const staticRoutes = [
-        { url: `${SITE.url}/`, lastModified: now, changeFrequency: 'weekly', priority: 1.0 },
-        { url: `${SITE.url}/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
-        { url: `${SITE.url}/services`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
-        { url: `${SITE.url}/work`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
-        { url: `${SITE.url}/photography`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-        { url: `${SITE.url}/team`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-        { url: `${SITE.url}/contact`, lastModified: now, changeFrequency: 'yearly', priority: 0.6 },
-        { url: `${SITE.url}/start-a-project`, lastModified: now, changeFrequency: 'yearly', priority: 0.8 },
-        { url: `${SITE.url}/clients`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
-    ];
+  const staticRoutes = [
+    { path: '/', lastModified: contentUpdated, changeFrequency: 'weekly', priority: 1.0 },
+    { path: '/about', lastModified: contentUpdated, changeFrequency: 'monthly', priority: 0.8 },
+    { path: '/services', lastModified: contentUpdated, changeFrequency: 'monthly', priority: 0.9 },
+    { path: '/work', lastModified: contentUpdated, changeFrequency: 'weekly', priority: 0.9 },
+    {
+      path: '/photography',
+      lastModified: contentUpdated,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    { path: '/journal', lastModified: contentUpdated, changeFrequency: 'weekly', priority: 0.8 },
+    { path: '/team', lastModified: contentUpdated, changeFrequency: 'monthly', priority: 0.6 },
+    { path: '/contact', lastModified: contentUpdated, changeFrequency: 'yearly', priority: 0.6 },
+    {
+      path: '/start-a-project',
+      lastModified: contentUpdated,
+      changeFrequency: 'yearly',
+      priority: 0.8,
+    },
+    { path: '/clients', lastModified: contentUpdated, changeFrequency: 'monthly', priority: 0.7 },
+    {
+      path: LEGAL.privacyHref,
+      lastModified: legalUpdated,
+      changeFrequency: 'yearly',
+      priority: 0.3,
+    },
+    { path: LEGAL.termsHref, lastModified: legalUpdated, changeFrequency: 'yearly', priority: 0.3 },
+  ].map(({ path, ...entry }) => ({ url: `${SITE.url}${path}`, ...entry }));
 
-    let projectRoutes = [];
-    let serviceRoutes = [];
+  const roleRoutes = listRoles().map((role) => ({
+    url: `${SITE.url}/${role.slug}`,
+    lastModified: new Date(`${role.updated}T00:00:00Z`),
+    changeFrequency: 'monthly',
+    priority: 0.9,
+  }));
 
-    try {
-        const slugs = await listPublishedProjectSlugs();
-        projectRoutes = slugs.map((p) => ({
-            url: `${SITE.url}/work/${p.slug}`,
-            lastModified: p.updatedAt ? new Date(p.updatedAt) : now,
-            changeFrequency: 'monthly',
-            priority: 0.7,
-        }));
-    } catch {
-        // DB unreachable — skip dynamic routes rather than crash the sitemap.
-    }
+  const articleRoutes = listArticles().map((article) => ({
+    url: `${SITE.url}/journal/${article.slug}`,
+    lastModified: new Date(`${article.dateModified}T00:00:00Z`),
+    changeFrequency: 'yearly',
+    priority: 0.6,
+  }));
 
-    try {
-        const services = await listPublishedServices();
-        serviceRoutes = services
-            .filter((s) => s.slug)
-            .map((s) => ({
-                url: `${SITE.url}/services/${s.slug}`,
-                lastModified: s.updatedAt ? new Date(s.updatedAt) : now,
-                changeFrequency: 'monthly',
-                priority: 0.7,
-            }));
-    } catch {
-        // Same fallback.
-    }
+  let projectRoutes = [];
+  let serviceRoutes = [];
 
-    return [...staticRoutes, ...serviceRoutes, ...projectRoutes];
+  try {
+    const slugs = await listPublishedProjectSlugs();
+    projectRoutes = slugs.map((p) => ({
+      url: `${SITE.url}/work/${p.slug}`,
+      lastModified: p.updatedAt ? new Date(p.updatedAt) : fallbackModified,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    }));
+  } catch {
+    // DB unreachable — skip dynamic routes rather than crash the sitemap.
+  }
+
+  try {
+    const services = await listPublishedServices();
+    serviceRoutes = services
+      .filter((s) => s.slug)
+      .map((s) => ({
+        url: `${SITE.url}/services/${s.slug}`,
+        lastModified: s.updatedAt ? new Date(s.updatedAt) : fallbackModified,
+        changeFrequency: 'monthly',
+        priority: 0.7,
+      }));
+  } catch {
+    // Same fallback.
+  }
+
+  return [...staticRoutes, ...roleRoutes, ...serviceRoutes, ...projectRoutes, ...articleRoutes];
 }

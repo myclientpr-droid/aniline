@@ -2,6 +2,8 @@ export const SITE = {
     name: 'AniLine',
     legalName: 'AniLine Production',
     tagline: 'Crafting Stories One Frame at a Time',
+    // Search results truncate around 60 characters; this variant leads with what we are hired for.
+    seoTagline: 'Rohingya-led Video Production & Photography Studio',
     message: 'Your Story. Our Community. One Production Partner.',
     description:
         'AniLine is a Rohingya-led video production, photography, and post-production company established in 2020. We craft documentary, promotional, commercial, and event films for organizations, filmmakers, businesses, and families.',
@@ -15,13 +17,13 @@ export const SITE = {
     contact: {
         email: '',
         phone: '',
-        whatsapp: '',
+        whatsapp: '+8801875558462',
         address: '',
     },
     social: {
-        facebook: '',
+        facebook: 'https://www.facebook.com/share/1YD1LswSkN/',
         instagram: '',
-        youtube: '',
+        youtube: 'https://youtube.com/@aniline.24',
         linkedin: '',
         tiktok: '',
     },
@@ -37,6 +39,9 @@ export const NAV_LINKS = [
     { label: 'Our Team', href: '/team' },
     { label: 'Contact', href: '/contact' },
 ];
+
+/** Bumped when the core marketing pages' copy changes; the sitemap must not claim "now". */
+export const CONTENT_UPDATED = '2026-11-08';
 
 export const PRIMARY_CTA = {
     label: 'Start a Project',
@@ -581,5 +586,348 @@ export const CLIENTS_PAGE = {
     empty: {
         title: 'Client list coming soon',
         message: 'We\u2019re preparing our client directory. Check back shortly.',
+    },
+};
+
+/* ------------------------------------------------------------------ */
+/* Legal pages                                                         */
+/* Two documents that cite each other's section numbers, so both live  */
+/* here: a cross-reference is one object access, not a hand-typed      */
+/* "section 6" that rots.                                              */
+/* ------------------------------------------------------------------ */
+
+export const LEGAL = {
+    effectiveDate: '2026-11-08',
+    // Bump whenever the wording changes materially — the on-page notice reads from this.
+    version: '1.0',
+    // Date the site's structure last changed in a way that touched either document.
+    platformLastUpdated: '2026-11-08',
+    responsePromise: 'We aim to reply to any privacy or legal request within 30 days.',
+    privacyHref: '/privacy',
+    termsHref: '/terms',
+};
+
+export const LEGAL_LINKS = [
+    { label: 'Contact', href: '/contact' },
+    { label: 'Privacy Policy', href: LEGAL.privacyHref },
+    { label: 'Terms of Use', href: LEGAL.termsHref },
+];
+
+export function legalContactHref() {
+    const { email, whatsapp } = SITE.contact;
+    if (email) return `mailto:${email}`;
+    if (whatsapp) return `https://wa.me/${whatsapp.replace(/[^\d]/g, '')}`;
+    return '/contact';
+}
+
+export const PRIVACY_PAGE = {
+    hero: {
+        eyebrow: 'Legal',
+        title: 'Privacy Policy',
+        subheading:
+            'How AniLine collects, uses, and protects the information you share with us \u2014 in plain language, with nothing buried.',
+    },
+    intro: [
+        `This policy explains what happens to your information when you visit ${SITE.name}, contact us, or make a film with us. It is written to be read, not to protect us from you.`,
+        'We collect little: what you choose to send us, plus the notes our hosting providers keep so the site stays online. We do not sell information, we do not buy profiles, and we do not run advertising trackers.',
+    ],
+    summary: {
+        title: 'The short version',
+        items: [
+            { title: 'No advertising trackers', description: 'No ad pixels or third-party analytics scripts on this site.' },
+            { title: 'Three cookies, all ours', description: 'A security check, a session for administrators, and one you can dismiss.' },
+            { title: 'Forms only, no accounts', description: 'Visitors never create accounts. We store what you type into a form.' },
+            { title: 'Your story is yours', description: 'Footage, photos, and footage-derived material stay private unless we agree otherwise in writing.' },
+        ],
+    },
+    sections: [
+        {
+            id: 'who-we-are',
+            title: 'Who we are',
+            body: [
+                `This site is operated by ${SITE.legalName} ("${SITE.name}", "we", "us"), a video production and photography studio established in ${SITE.founded} and based in ${SITE.location.region}, ${SITE.location.country}. We are the controller for the personal information described in this policy.`,
+            ],
+            definitions: [
+                { term: 'Personal information', description: 'Any information that can reasonably be linked to you \u2014 your name, your email address, or what you write to us.' },
+                { term: 'Controller', description: 'The organisation that decides why and how personal information is processed.' },
+            ],
+        },
+        {
+            id: 'information-we-collect',
+            title: 'Information we collect',
+            body: [
+                'You can read almost every page without giving us anything. Information reaches us only in the situations below.',
+            ],
+            items: [
+                {
+                    title: 'Enquiry and project forms',
+                    description: 'When you write to us through /contact or /start-a-project, we receive and store: your name, email address, and project category (all required); optionally your organisation, phone number, preferred shoot date or timeline, location, a description of the project, and any reference links you paste in. Enquiries also carry a status note for our own follow-up.',
+                },
+                {
+                    title: 'Messages you send directly',
+                    description: 'Email and WhatsApp messages go through those providers, and we receive what you send us there. Your enquiry is handled the same way as a form submission.',
+                },
+                {
+                    title: 'Technical information kept by our providers',
+                    description: 'Our hosting and media providers process your IP address and browser information to deliver pages and media, and keep standard server logs for security and diagnostics. We do not maintain analytics of our own.',
+                },
+                {
+                    title: 'What we deliberately do not collect',
+                    description: 'No advertising identifiers, no cross-site tracking, no social-media account linking, no payment or card information through this site, and no sensitive details such as health or religious information \u2014 please do not send these through a form.',
+                },
+            ],
+            note: 'We receive enquiries from adults acting for themselves or for an organisation. We do not knowingly collect information from children, and we do not ask for it.',
+        },
+        {
+            id: 'how-we-use',
+            title: 'How we use your information',
+            body: [
+                'Your information is used for one of a small number of purposes, and each one has a lawful basis under data-protection law:',
+            ],
+            definitions: [
+                { term: 'Respond to your enquiry', description: 'Reading your message, pricing and scoping the work, and replying. Basis: steps taken at your request before entering a contract.' },
+                { term: 'Deliver a project', description: 'Coordinating shoot dates, locations, crew, and deliverables. Basis: performance of our contract with you.' },
+                { term: 'Keep the site working and secure', description: 'Preventing form abuse, diagnosing faults, and applying updates. Basis: our legitimate interest in a reliable, safe service.' },
+                { term: 'Legal and accounting records', description: 'Keeping agreements and records we are required to retain. Basis: compliance with a legal obligation.' },
+            ],
+            note: 'We do not send marketing email. We may write to you about a project we have made together \u2014 post-delivery revisions, file enquiries, or questions about the work.',
+        },
+        {
+            id: 'cookies',
+            title: 'Cookies and local storage',
+            body: [
+                'This site sets no advertising or analytics cookies. It uses exactly three browser-stored items, all of which come from us:',
+            ],
+            items: [
+                { title: 'A security check', description: 'A temporary cookie used on form pages to protect against forged requests. It expires on its own and holds no information about you.' },
+                { title: 'An administrator session', description: 'If a member of our team signs in to the studio admin, a session cookie keeps them signed in for up to seven days. Visitors never receive it.' },
+                { title: 'A dismissal flag', description: 'When you dismiss the cookie notice, a small local-storage entry records that \u2014 so we can stop showing it.' },
+            ],
+            note: 'Because none of these track you, there is no consent banner to click and no preference centre to manage.',
+        },
+        {
+            id: 'sharing',
+            title: 'When we share information',
+            body: [
+                'We do not sell, rent, or trade personal information. Two narrow situations are worth being explicit about, because they are easy to misread:',
+            ],
+            items: [
+                {
+                    title: 'Administrators can read enquiries',
+                    description: 'Enquiries are visible only to signed-in members of our team. We do not grant outside access to the studio admin.',
+                },
+                {
+                    title: 'Service providers process data on our behalf',
+                    description: 'The providers listed below handle information under their own terms and privacy practices. Where payment for a production is arranged through a bank or mobile-money provider, that provider sees the transaction details it needs.',
+                },
+            ],
+        },
+        {
+            id: 'providers',
+            title: 'Service providers',
+            body: [
+                'A small number of companies keep this site and its enquiries working. None of them are advertising or data-broker services.',
+            ],
+            items: [
+                { title: 'Vercel', description: 'Hosts the website and runs the code. Request logs are kept for security and diagnostics.' },
+                { title: 'MongoDB Atlas', description: 'Stores enquiries, plus the public content shown on the site such as projects, photography, clients, and team details.' },
+                { title: 'Cloudinary', description: 'Hosts images and video. Media is requested through our own domain, and requests pass through the visitor\u2019s browser to Cloudinary\u2019s content network.' },
+                { title: 'WhatsApp (Meta)', description: 'Carries messages if you choose to contact us on WhatsApp, under WhatsApp\u2019s terms.' },
+            ],
+            note: 'Some of these providers run servers outside your country. By sending us information you understand it may be transferred to and stored in another country with its own data-protection rules.',
+        },
+        {
+            id: 'footage',
+            title: 'Footage, photographs, and people in our films',
+            body: [
+                'Video and photography are the core of our work, and the people in frame matter more than the files. Our practice:',
+            ],
+            items: [
+                { title: 'Access', description: 'Access to raw footage and edited masters is limited to the members of our team working on that project.' },
+                { title: 'Consent', description: 'Where a production is of identifiable people, we follow the consent practice agreed with the client for that shoot.' },
+                { title: 'Publishing', description: 'We publish a project or someone\u2019s photographs on this site or on our social channels only when the client agrees, or when the material was produced for public use in the first place.' },
+                { title: 'Requests', description: 'If a subject asks us to take down published material, write to us. We can remove a specific image or film quickly \u2014 it is often a single database entry.' },
+            ],
+        },
+        {
+            id: 'retention',
+            title: 'How long we keep information',
+            body: [
+                'Enquiries are kept for as long as they are useful to us \u2014 typically until our follow-up is complete, and otherwise no longer than three years. Enquiries can be deleted at any time from our admin.',
+                'Project records, including footage and deliverables, are kept for as long as our working relationship and any agreed archiving period require. Nothing is kept indefinitely without a reason, and deletions are real: removing a record removes it from the database.',
+            ],
+        },
+        {
+            id: 'security',
+            title: 'How we protect it',
+            body: [
+                'Enquiry forms are validated, rate-limited, and protected by a request-forgery check. Our databases and media are hosted by providers that encrypt traffic in transit, and access to our admin is restricted to our team with individual sign-ins.',
+                'No system is perfectly secure, but the amount we hold is small \u2014 which is itself a form of protection. If a breach ever puts your information at risk, we will tell you and any relevant authority as the law and the circumstances require.',
+            ],
+        },
+        {
+            id: 'your-rights',
+            title: 'Your rights',
+            body: [
+                'Subject to where you live, you may have the right to:',
+            ],
+            items: [
+                { title: 'Know and access', description: 'Ask whether we hold information about you and receive a copy.' },
+                { title: 'Correct', description: 'Have inaccurate information corrected.' },
+                { title: 'Delete', description: 'Ask us to delete your enquiry or other information we hold about you, where we have no ongoing legal reason to keep it.' },
+                { title: 'Restrict or object', description: 'Ask us to stop certain uses, including any use based on our legitimate interests.' },
+                { title: 'Complain', description: 'Lodge a complaint with the data-protection authority in your country.' },
+            ],
+            note: `${LEGAL.responsePromise} To make a request, use the contact details at the end of this page and tell us what you would like us to do.`,
+        },
+        {
+            id: 'changes',
+            title: 'Changes to this policy',
+            body: [
+                `This policy reflects how ${SITE.name} works as of ${LEGAL.platformLastUpdated}. If the site changes in a way that affects it \u2014 a new provider, a new kind of information \u2014 we will update this page and revise the effective date and version shown at the top.`,
+            ],
+        },
+    ],
+    contact: {
+        title: 'Questions about privacy',
+        body: 'For anything in this policy \u2014 access, correction, deletion, a takedown request, or simply a question \u2014 write to us and we will respond.',
+    },
+};
+
+export const TERMS_PAGE = {
+    hero: {
+        eyebrow: 'Legal',
+        title: 'Terms of Use',
+        subheading:
+            'The general terms for using this website, and the principles that sit behind the way we work, price, and deliver projects.',
+    },
+    intro: [
+        `These Terms of Use govern your access to ${SITE.name} and its content. By using the site you agree to them. If you do not, please stop using the site.`,
+        'They are the baseline for everyone. A production always has its own written agreement on top of them \u2014 signed quotes, scopes, or contracts \u2014 and that agreement wins if it differs from anything here.',
+    ],
+    summary: {
+        title: 'The short version',
+        items: [
+            { title: 'Look, read, enjoy', description: 'Browse freely. Personal, non-commercial use of the site is welcome.' },
+            { title: 'Our work is our work', description: 'Films and photographs are protected. Copying or republishing needs our permission.' },
+            { title: 'Agreements win', description: 'Where a signed project agreement says otherwise, the agreement governs.' },
+            { title: 'Made in good faith', description: 'We describe things honestly and deliver with care, but we do not promise perfection.' },
+        ],
+    },
+    sections: [
+        {
+            id: 'who-we-are',
+            title: 'About these terms',
+            body: [
+                `These Terms of Use are published by ${SITE.legalName} ("${SITE.name}", "we", "us"). They may be revised from time to time; the effective date and version at the top of this page show which version you are reading, and the version in force when you use the site is the one that applies.`,
+                'We may also change, suspend, or withdraw parts of the site \u2014 a portfolio entry, a service page \u2014 at any time and without notice.',
+            ],
+        },
+        {
+            id: 'using-the-site',
+            title: 'Using this website',
+            body: [
+                'The site is provided for information about our studio and our work. You are welcome to read it, share links to it, and use it to get in touch.',
+                'When using the site you agree not to:',
+            ],
+            items: [
+                { title: 'Interfere with it', description: 'Attempt to disrupt, overload, or probe the site or its servers, or bypass any access restriction.' },
+                { title: 'Submit abuses', description: 'Use the enquiry forms for spam, automated submissions, or content that is illegal, deceptive, or infringes someone else\u2019s rights.' },
+                { title: 'Republish the work', description: 'Copy, resell, or republish our films, photographs, or written content without written permission.' },
+            ],
+            note: 'We may block access or refuse submissions that breach these rules.',
+        },
+        {
+            id: 'portfolio',
+            title: 'Our portfolio',
+            body: [
+                'The films, photographs, client marks, and text on this site are here to show our work. They are not free to reuse.',
+            ],
+            items: [
+                { title: 'Written ownership', description: 'The site, its design, and its content belong to AniLine or to the parties who licensed them to us, and are protected by copyright and related laws.' },
+                { title: 'Client trademarks', description: 'Client names and logos appear with permission and remain the property of their owners. Their presence is not an endorsement of any particular claim on our behalf.' },
+                { title: 'Embedding', description: 'You may share links to our work and embed our own public social or video posts using the platforms\u2019 native embed tools. Anything beyond that needs our written permission.' },
+                { title: 'Permissions', description: 'For press, organisations, or anyone who wants to use our material, write to us \u2014 permissions are usually straightforward to arrange.' },
+            ],
+        },
+        {
+            id: 'projects-and-pricing',
+            title: 'Projects, quotes, and pricing',
+            body: [
+                'Nothing on this site is an offer capable of acceptance, and no price shown is a final quotation. Discussions, forms, and WhatsApp messages are a starting point.',
+                'A project exists only under a written agreement \u2014 a signed quote, a written scope, a purchase order, or a contract \u2014 that sets out deliverables, price, payment schedule, timeline, and the responsibilities of each side. Until then, we owe nothing and you owe nothing.',
+                'Unless a project agreement says otherwise, prices exclude applicable taxes, third-party costs such as permits or licensed music, and expenses such as travel or accommodation.',
+            ],
+        },
+        {
+            id: 'responsibilities',
+            title: 'Your responsibilities as a client',
+            body: [
+                'Projects run on both sides being clear. Where a project agreement makes you responsible, please treat it as part of the work:',
+            ],
+            items: [
+                { title: 'Accurate briefs', description: 'Give us accurate information about the project, the audience, and any properties, people, or locations involved.' },
+                { title: 'Permissions and access', description: 'Obtain any consents, permits, releases, or property permissions the shoot needs, when the agreement says so.' },
+                { title: 'Materials', description: 'Ensure any footage, images, logos, or music you supply may lawfully be used, and clear the necessary rights.' },
+                { title: 'Feedback on time', description: 'Respond to review rounds and approve deliverables by the agreed dates, so timelines can hold.' },
+            ],
+        },
+        {
+            id: 'rights-and-licences',
+            title: 'Ownership and licences in our work',
+            body: [
+                'Unless a project agreement says otherwise, these are our standard positions. The signed agreement always takes precedence.',
+            ],
+            items: [
+                { title: 'Your input stays yours', description: 'You keep ownership of the materials, information, and logos you supply to us.' },
+                { title: 'Deliverables are licensed', description: 'We retain copyright in the films and photographs we produce and grant you a licence to use the final deliverables within the scope agreed for the project.' },
+                { title: 'Portfolio use', description: 'We may show a finished project on our site and channels unless the agreement or your written instructions say not to.' },
+                { title: 'Raw footage', description: 'Project files and raw footage remain ours unless the agreement includes them.' },
+                { title: 'Credit', description: 'Where the agreement asks for a credit, please display it as agreed.' },
+            ],
+        },
+        {
+            id: 'third-party',
+            title: 'Third-party links and services',
+            body: [
+                'This site links to external platforms such as Facebook, YouTube, and WhatsApp, and requests media from our hosting providers. We do not control those services, and their terms and privacy practices are their own. A link is not an endorsement.',
+            ],
+        },
+        {
+            id: 'availability',
+            title: 'Availability',
+            body: [
+                'We keep the site online and up to date as a studio, not as a 24/7 service. Pages may be unavailable, cached, or incomplete for short periods \u2014 during updates, maintenance, or events outside our control.',
+            ],
+        },
+        {
+            id: 'liability',
+            title: 'Limitation of liability',
+            body: [
+                'We prepare the site carefully, but we provide it "as is" and without warranties of any kind, to the fullest extent the law allows. In particular, we cannot promise that it is error-free, uninterrupted, or up to date at every moment.',
+                'To the extent the law permits, AniLine is not liable for any indirect, incidental, or consequential loss arising from your use of the site, or for any loss caused by third-party services linked from it.',
+                'Nothing in these terms limits liability that cannot be excluded by law.',
+            ],
+        },
+        {
+            id: 'privacy',
+            title: 'Privacy',
+            body: [
+                'How we collect and use personal information is described in our Privacy Policy. The forms on this site, what our providers see, and your rights are all explained there.',
+            ],
+        },
+        {
+            id: 'general',
+            title: 'General',
+            body: [
+                'If any part of these terms is found unenforceable, the rest continues to apply.',
+                `These terms are made under the laws of ${SITE.location.country}, and disputes relating to the site itself will be handled by its courts \u2014 unless a signed project agreement provides for something else.`,
+                'For anything about these terms, use the contact details at the end of this page.',
+            ],
+        },
+    ],
+    contact: {
+        title: 'Questions about these terms',
+        body: 'If something here is unclear, or you need permission to use our material, write to us and we will respond.',
     },
 };

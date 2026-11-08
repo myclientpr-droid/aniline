@@ -2,11 +2,12 @@ import Container from '@/components/ui/Container';
 import SectionHeading from '@/components/ui/SectionHeading';
 import PageHero from '@/components/layout/PageHero';
 import CtaSection from '@/components/ui/CtaSection';
+import PageSchema from '@/components/seo/PageSchema';
 import { buildMetadata } from '@/lib/seo';
 import { ABOUT } from '@/lib/site';
 
 export const metadata = buildMetadata({
-    title: 'About',
+    title: 'About AniLine | Rohingya-Led Video & Photo Studio',
     description:
         'AniLine is a Rohingya-led video production, photography, and post-production studio established in 2020. Meet the studio and how we work.',
     path: '/about',
@@ -17,6 +18,12 @@ export default function AboutPage() {
 
     return (
         <>
+            <PageSchema
+                path="/about"
+                title="About AniLine | Rohingya-Led Video & Photo Studio"
+                description={metadata.description}
+                type="AboutPage"
+            />
             {/* Hero */}
             <PageHero eyebrow={hero.eyebrow} title={hero.title} subheading={hero.subheading} />
 

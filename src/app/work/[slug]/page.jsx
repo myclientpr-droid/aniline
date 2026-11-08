@@ -5,6 +5,7 @@ import { ChevronLeft } from 'lucide-react';
 import Container from '@/components/ui/Container';
 import Button from '@/components/ui/Button';
 import CtaSection from '@/components/ui/CtaSection';
+import JsonLd from '@/components/seo/JsonLd';
 import {
     getPublishedProjectBySlug,
     listPublishedProjectSlugs,
@@ -14,12 +15,14 @@ import {
     buildVideoUrl,
     buildVideoPoster,
 } from '@/lib/cloudinary';
+import { buildMetadata } from '@/lib/seo';
+import { SITE } from '@/lib/site';
 import {
-    buildMetadata,
     breadcrumbJsonLd,
+    creativeWorkJsonLd,
     videoObjectJsonLd,
-    stringifyJsonLd,
-} from '@/lib/seo';
+    webPageJsonLd,
+} from '@/lib/schema';
 
 export async function generateStaticParams() {
     try {
@@ -40,13 +43,18 @@ export async function generateMetadata({ params }) {
             noIndex: true,
         });
     }
+    // The category goes into the title only when it is not already part of the project title.
+    const withCategory =
+        project.seoTitle ||
+        (project.category && !project.title.toLowerCase().includes(project.category.toLowerCase())
+            ? `${project.title} \u2014 ${project.category}`
+            : project.title);
     return buildMetadata({
-        title: project.seoTitle || project.title,
+        title: `${withCategory} | ${SITE.name}`,
         description: project.seoDescription || project.shortDescription || undefined,
         path: `/work/${project.slug}`,
-        image: project.featuredImage?.publicId
-            ? buildImageUrl(project.featuredImage.publicId, { width: 1200, crop: 'fill' })
-            : undefined,
+        // The opengraph-image route for this segment composes the featured still into the card.
+        ogType: 'video.other',
     });
 }
 
@@ -72,44 +80,66 @@ export default async function ProjectPage({ params }) {
     const heroSrc = featuredImage?.publicId
         ? buildImageUrl(featuredImage.publicId, { width: 1920, crop: 'fill' })
         : null;
+    const posterSrc = videoPublicId
+        ? buildVideoPoster(videoPublicId, { width: 1600 })
+        : heroSrc;
+    const gallerySrcs = gallery
+        .filter((item) => item.publicId)
+        .slice(0, 10)
+        .map((item) => buildImageUrl(item.publicId, { width: 1280, crop: 'fill' }));
+
+    const pagePath = `/work/${slug}`;
+    const pageNodes = [
+        webPageJsonLd({
+            path: pagePath,
+            name: title,
+            description: shortDescription || undefined,
+            primaryImage: posterSrc || undefined,
+            about: { '@id': `${SITE.url}${pagePath}#work` },
+        }),
+        breadcrumbJsonLd([
+            { name: 'Home', path: '/' },
+            { name: 'Our Work', path: '/work' },
+            { name: title, path: pagePath },
+        ]),
+        {
+            ...creativeWorkJsonLd({
+                title,
+                slug,
+                shortDescription,
+                category,
+                year,
+                location,
+                client,
+                servicesProvided,
+                images: [heroSrc, ...gallerySrcs].filter(Boolean),
+            }),
+            '@context': 'https://schema.org',
+        },
+    ];
+
+    if (videoPublicId) {
+        pageNodes.push({
+            ...videoObjectJsonLd({
+                title,
+                slug,
+                shortDescription,
+                fullDescription,
+                videoUrl: buildVideoUrl(videoPublicId, { width: 1600 }),
+                posterUrl: posterSrc,
+                uploadDate: project.createdAt
+                    ? new Date(project.createdAt).toISOString()
+                    : project.updatedAt
+                      ? new Date(project.updatedAt).toISOString()
+                      : undefined,
+            }),
+            '@context': 'https://schema.org',
+        });
+    }
 
     return (
         <>
-            {/* Structured data */}
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{
-                    __html: stringifyJsonLd(
-                        breadcrumbJsonLd([
-                            { name: 'Home', path: '/' },
-                            { name: 'Our Work', path: '/work' },
-                            { name: title, path: `/work/${slug}` },
-                        ])
-                    ),
-                }}
-            />
-
-            {videoPublicId && (
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: stringifyJsonLd(
-                            videoObjectJsonLd({
-                                title,
-                                slug,
-                                shortDescription,
-                                fullDescription,
-                                videoPublicId,
-                                videoUrl: buildVideoUrl(videoPublicId, { width: 1600 }),
-                                posterUrl: buildVideoPoster(videoPublicId, { width: 1600 }),
-                                uploadDate: project.createdAt
-                                    ? new Date(project.createdAt).toISOString()
-                                    : undefined,
-                            })
-                        ),
-                    }}
-                />
-            )}
+            <JsonLd data={pageNodes} />
             {/* Hero media */}
             <section className="relative bg-navy-dark text-white">
                 <div className="relative h-[50vh] md:h-[70vh] w-full overflow-hidden">

@@ -5,12 +5,13 @@ import PageHero from '@/components/layout/PageHero';
 import ProjectFilter from '@/components/work/ProjectFilter';
 import TiltField from '@/components/motion/TiltField';
 import CtaSection from '@/components/ui/CtaSection';
+import PageSchema from '@/components/seo/PageSchema';
 import { listPublishedClients, listPublishedClientTypes } from '@/lib/data/clients';
 import { buildMetadata } from '@/lib/seo';
 import { CLIENTS_PAGE } from '@/lib/site';
 
 export const metadata = buildMetadata({
-    title: 'Clients',
+    title: 'Clients & Collaborators | AniLine',
     description:
         'Organizations, businesses, schools, filmmakers, and families who work with AniLine \u2014 a Rohingya-led video production and photography studio.',
     path: '/clients',
@@ -37,6 +38,12 @@ export default async function ClientsPage({ searchParams }) {
 
     return (
         <>
+            <PageSchema
+                path="/clients"
+                title="Clients & Collaborators | AniLine"
+                description={metadata.description}
+                type="CollectionPage"
+            />
             {/* Hero */}
             <PageHero eyebrow={hero.eyebrow} title={hero.title} subheading={hero.subheading} />
 

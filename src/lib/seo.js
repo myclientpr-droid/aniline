@@ -1,160 +1,117 @@
 import { SITE } from '@/lib/site';
 
 /**
+ * Metadata only. Structured data lives in `@/lib/schema` so the two can be reasoned about
+ * separately — a page's head and its JSON-LD graph rarely change together.
+ */
+
+const ROBOTS = {
+    index: true,
+    follow: true,
+    googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+        'max-video-preview': -1,
+    },
+};
+
+const NO_ROBOTS = { index: false, follow: false, googleBot: { index: false, follow: false } };
+
+/**
+ * Root metadata. `metadataBase` lives here and nowhere else, so relative canonicals and
+ * file-convention OG images all resolve against the same origin.
+ * @returns {import('next').Metadata}
+ */
+export function siteMetadata() {
+    return {
+        metadataBase: new URL(SITE.url),
+        // Only a default: every page passes its finished title to buildMetadata.
+        title: `${SITE.name} \u2014 ${SITE.seoTagline}`,
+        description: SITE.description,
+        applicationName: SITE.name,
+        alternates: { canonical: '/' },
+        robots: ROBOTS,
+        formatDetection: { telephone: false, address: false, email: false },
+        openGraph: {
+            type: 'website',
+            url: SITE.url,
+            siteName: SITE.name,
+            title: `${SITE.name} \u2014 ${SITE.seoTagline}`,
+            description: SITE.description,
+            locale: SITE.locale,
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: `${SITE.name} \u2014 ${SITE.seoTagline}`,
+            description: SITE.description,
+        },
+    };
+}
+
+/**
  * Build a Next.js Metadata object for a page.
+ *
+ * `image` is optional on purpose: without it, the file-convention `opengraph-image` for the
+ * segment supplies the card, so there is never a reference to an image that does not exist.
+ *
  * @param {object} opts
- * @param {string} opts.title - Page title (without site name)
- * @param {string} [opts.description] - Meta description
- * @param {string} [opts.path] - Path beginning with "/" (e.g. "/about")
- * @param {string} [opts.image] - Absolute or /-prefixed OG image
- * @param {boolean} [opts.noIndex] - If true, sets robots to noindex
+ * @param {string} [opts.title] - Page title including the brand, or `null` for the site default
+ * @param {string} [opts.description]
+ * @param {string|null} [opts.path] - Canonical path starting with "/"; null omits the canonical
+ * @param {'website'|'article'|'video.other'|'profile'} [opts.ogType]
+ * @param {{ publishedTime?: string, modifiedTime?: string, authors?: string[], section?: string, tags?: string[] }} [opts.article]
+ * @param {string} [opts.image] - Absolute or root-relative image that overrides the segment card
+ * @param {boolean} [opts.noIndex]
  * @returns {import('next').Metadata}
  */
 export function buildMetadata({
     title,
     description = SITE.description,
     path = '/',
-    image = '/og-default.jpg',
+    ogType = 'website',
+    article,
+    image,
     noIndex = false,
 } = {}) {
-    const fullTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} \u2014 ${SITE.tagline}`;
-    const url = `${SITE.url}${path}`;
-    const ogImage = image.startsWith('http') ? image : `${SITE.url}${image}`;
+    const fullTitle = title || `${SITE.name} \u2014 ${SITE.seoTagline}`;
+    const url = path ? `${SITE.url}${path}` : undefined;
+    const ogImage = image
+        ? [{ url: image.startsWith('http') ? image : `${SITE.url}${image}`, width: 1200, height: 630, alt: SITE.name }]
+        : undefined;
 
-    return {
+    const metadata = {
         title: fullTitle,
         description,
-        metadataBase: new URL(SITE.url),
-        alternates: {
-            canonical: path,
-        },
-        robots: noIndex
-            ? { index: false, follow: false }
-            : { index: true, follow: true },
+        robots: noIndex ? NO_ROBOTS : ROBOTS,
         openGraph: {
             title: fullTitle,
             description,
             url,
             siteName: SITE.name,
             locale: SITE.locale,
-            type: 'website',
-            images: [{ url: ogImage, width: 1200, height: 630, alt: SITE.name }],
+            type: ogType,
+            ...(ogImage ? { images: ogImage } : {}),
+            ...(ogType === 'article' && article
+                ? {
+                      publishedTime: article.publishedTime,
+                      modifiedTime: article.modifiedTime,
+                      authors: article.authors,
+                      section: article.section,
+                      tags: article.tags,
+                  }
+                : {}),
         },
         twitter: {
             card: 'summary_large_image',
             title: fullTitle,
             description,
-            images: [ogImage],
+            ...(ogImage ? { images: ogImage.map((i) => i.url) } : {}),
         },
     };
-}
 
-/**
- * Organization JSON-LD. Only include fields we can support factually.
- */
-export function organizationJsonLd() {
-    const data = {
-        '@context': 'https://schema.org',
-        '@type': 'Organization',
-        name: SITE.name,
-        url: SITE.url,
-        description: SITE.description,
-        foundingDate: SITE.founded,
-        areaServed: SITE.location.region,
-    };
+    if (path) metadata.alternates = { canonical: path };
 
-    if (SITE.contact.email) data.email = SITE.contact.email;
-    if (SITE.contact.phone) data.telephone = SITE.contact.phone;
-
-    const sameAs = Object.values(SITE.social).filter(Boolean);
-    if (sameAs.length > 0) data.sameAs = sameAs;
-
-    return data;
-}
-
-
-/* ------------------------------------------------------------------ */
-/* Additional JSON-LD helpers                                          */
-/* ------------------------------------------------------------------ */
-
-/**
- * Build a BreadcrumbList JSON-LD.
- * @param {Array<{ name: string, path: string }>} crumbs - Order: home first.
- * @returns {object}
- */
-export function breadcrumbJsonLd(crumbs) {
-    return {
-        '@context': 'https://schema.org',
-        '@type': 'BreadcrumbList',
-        itemListElement: crumbs.map((c, i) => ({
-            '@type': 'ListItem',
-            position: i + 1,
-            name: c.name,
-            item: `${SITE.url}${c.path}`,
-        })),
-    };
-}
-
-/**
- * Build a Service JSON-LD for a service detail page.
- * Only include fields actually present on the record.
- * @param {{ title: string, slug: string, description?: string, shortDescription?: string }} service
- */
-export function serviceJsonLd(service) {
-    return {
-        '@context': 'https://schema.org',
-        '@type': 'Service',
-        name: service.title,
-        description: service.shortDescription || service.description || undefined,
-        url: `${SITE.url}/services/${service.slug}`,
-        provider: {
-            '@type': 'Organization',
-            name: SITE.name,
-            url: SITE.url,
-        },
-        areaServed: SITE.location.region,
-    };
-}
-
-/**
- * Build a VideoObject JSON-LD. Only call when the project actually has a video.
- * @param {{
- *   title: string,
- *   slug: string,
- *   shortDescription?: string,
- *   fullDescription?: string,
- *   videoPublicId: string,
- *   videoUrl: string,
- *   posterUrl?: string,
- *   uploadDate?: string,
- * }} project
- */
-export function videoObjectJsonLd(project) {
-    const url = `${SITE.url}/work/${project.slug}`;
-    return {
-        '@context': 'https://schema.org',
-        '@type': 'VideoObject',
-        name: project.title,
-        description:
-            project.shortDescription || project.fullDescription || undefined,
-        thumbnailUrl: project.posterUrl ? [project.posterUrl] : undefined,
-        uploadDate: project.uploadDate || undefined,
-        contentUrl: project.videoUrl || undefined,
-        embedUrl: url,
-        publisher: {
-            '@type': 'Organization',
-            name: SITE.name,
-            url: SITE.url,
-        },
-    };
-}
-
-/**
- * Serialize JSON-LD for embedding in <script type="application/ld+json">.
- * Strips undefined fields so the payload stays clean.
- * @param {object} data
- * @returns {string}
- */
-export function stringifyJsonLd(data) {
-    return JSON.stringify(data, (_, v) => (v === undefined ? undefined : v));
+    return metadata;
 }

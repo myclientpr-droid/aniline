@@ -5,17 +5,31 @@ import EmptyState from '@/components/ui/EmptyState';
 import ProjectFilter from '@/components/work/ProjectFilter';
 import CtaSection from '@/components/ui/CtaSection';
 import TiltField from '@/components/motion/TiltField';
+import PageSchema from '@/components/seo/PageSchema';
 import { listPublishedProjects } from '@/lib/data/projects';
 import { buildMetadata } from '@/lib/seo';
+import { itemListJsonLd } from '@/lib/schema';
 import { PROJECT_CATEGORIES } from '@/lib/constants';
-import { WORK_PAGE } from '@/lib/site';
+import { SITE, WORK_PAGE } from '@/lib/site';
 
-export const metadata = buildMetadata({
-    title: 'Our Work',
-    description:
-        'Selected documentary, promotional, commercial, wedding, event, music video, and creative productions by AniLine.',
-    path: '/work',
-});
+const PAGE_TITLE = 'Portfolio & Selected Productions | AniLine';
+const PAGE_DESCRIPTION =
+    'Selected documentary, promotional, commercial, wedding, event, music video, and creative productions by AniLine.';
+
+export async function generateMetadata({ searchParams }) {
+    const params = await Promise.resolve(searchParams);
+    const category = typeof params?.category === 'string' ? params.category : '';
+    if (!category) {
+        return buildMetadata({ title: PAGE_TITLE, description: PAGE_DESCRIPTION, path: '/work' });
+    }
+    // Filtered views are the same page under a different query: one canonical, not indexed.
+    return buildMetadata({
+        title: `${category} Productions | AniLine`,
+        description: `AniLine's ${category.toLowerCase()} productions \u2014 documentary, promotional and creative video work.`,
+        path: '/work',
+        noIndex: true,
+    });
+}
 
 async function fetchProjects(category) {
     try {
@@ -39,6 +53,25 @@ export default async function WorkPage({ searchParams }) {
 
     return (
         <>
+            <PageSchema
+                path="/work"
+                title={PAGE_TITLE}
+                description={PAGE_DESCRIPTION}
+                type="CollectionPage"
+                nodes={
+                    category
+                        ? []
+                        : [
+                              itemListJsonLd({
+                                  name: 'Selected productions',
+                                  items: projects.map((p) => ({
+                                      name: p.title,
+                                      url: `${SITE.url}/work/${p.slug}`,
+                                  })),
+                              }),
+                          ]
+                }
+            />
             {/* Hero */}
             <PageHero
                 eyebrow={hero.eyebrow}

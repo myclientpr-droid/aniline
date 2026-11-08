@@ -42,7 +42,7 @@ export default async function TeamPreview() {
                     </div>
                 </Reveal>
 
-                <ul className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+                <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {display.map((member, i) => (
                         <li key={String(member._id)}>
                             <Reveal delay={i * STAGGER_STEP}>

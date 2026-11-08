@@ -41,6 +41,59 @@
   --container-wide: 88rem;
 }
 
+/* Anchor targets clear the sticky header, and mobile additionally clears the legal
+   pages' pinned contents bar. */
+[id] {
+  scroll-margin-top: 5.5rem;
+}
+
+@media (max-width: 1023.98px) {
+  .legal-section[id],
+  #contact-us {
+    scroll-margin-top: 9rem;
+  }
+}
+
+/* Arrival cue: a section you jump to flashes its own label instead of the reader
+   losing their place in a wall of text. */
+@keyframes legalTarget {
+  from { background-color: rgba(254, 165, 0, 0.2); }
+  to   { background-color: rgba(254, 165, 0, 0); }
+}
+
+.legal-section:target > div > h2,
+.legal-section:target > div > span {
+  animation: legalTarget 1.6s var(--ease-cinematic) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .legal-section:target > div > h2,
+  .legal-section:target > div > span {
+    animation: none;
+  }
+}
+
+/* Printing a policy is a real use case: drop the chrome, keep the words. */
+@media print {
+  .site-header,
+  .site-footer,
+  .legal-rail {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .legal-section {
+    break-inside: avoid;
+  }
+
+  .legal-section a {
+    text-decoration: underline;
+  }
+}
+
 /* ============================================
    REGISTERED CUSTOM PROPERTIES
    Declared `inherits: false` so a card nested inside another tilted card cannot

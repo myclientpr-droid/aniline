@@ -4,8 +4,8 @@ import Button from '@/components/ui/Button';
 import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
-    title: 'Page not found',
-    path: '/404',
+    title: 'Page not found | AniLine',
+    path: null,
     noIndex: true,
 });
 

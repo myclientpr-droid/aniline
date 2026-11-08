@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
 import Button from '@/components/ui/Button';
-import { NAV_LINKS, PRIMARY_CTA, SITE } from '@/lib/site';
+import { NAV_LINKS, PRIMARY_CTA, SITE, LEGAL_LINKS } from '@/lib/site';
 import Image from "next/image"
 
 /**
@@ -75,11 +75,11 @@ export default function MobileNav({ open, onClose }) {
                         <div>
                             <Image
                                 src="/aniline-5555x1330.png"
-                                alt="Logo"
+                                alt=""
                                 width={120}
                                 height={30}
                                 className='w-auto h-auto' />
-                            <h1 className="sr-only">{SITE.name}</h1>
+                            <span className="sr-only">{SITE.name}</span>
                         </div>
                     </Link>
                     <button
@@ -117,6 +117,32 @@ export default function MobileNav({ open, onClose }) {
                             );
                         })}
                     </ul>
+
+                    <div className="mt-6 pt-5 border-t border-white/10">
+                        <p className="px-3 text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-white/40">
+                            Legal
+                        </p>
+                        <ul className="mt-2 flex flex-wrap gap-x-1 gap-y-1">
+                            {LEGAL_LINKS.filter((link) => link.href !== '/contact').map((link) => {
+                                const active = pathname === link.href;
+                                return (
+                                    <li key={link.href}>
+                                        <Link
+                                            href={link.href}
+                                            onClick={onClose}
+                                            aria-current={active ? 'page' : undefined}
+                                            className={`block rounded-md px-3 py-2 text-sm transition-colors ${active
+                                                ? 'text-orange'
+                                                : 'text-white/70 hover:bg-white/5 hover:text-white'
+                                                }`}
+                                        >
+                                            {link.label}
+                                        </Link>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
 
                     <div className="mt-6 pt-6 border-t border-white/10">
                         <Button
