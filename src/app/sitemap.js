@@ -1,7 +1,10 @@
 import { listPublishedProjectSlugs } from '@/lib/data/projects';
+import { listPublishedVideoSlugs } from '@/lib/data/videos';
 import { listPublishedServices } from '@/lib/data/services';
+import { listPublishedTeamMemberSlugs } from '@/lib/data/team';
 import { listRoles } from '@/content/roles';
 import { listArticles } from '@/content/journal';
+import { slugify } from '@/lib/slug';
 import { CONTENT_UPDATED, LEGAL, SITE } from '@/lib/site';
 
 /**
@@ -21,6 +24,12 @@ export default async function sitemap() {
     { path: '/about', lastModified: contentUpdated, changeFrequency: 'monthly', priority: 0.8 },
     { path: '/services', lastModified: contentUpdated, changeFrequency: 'monthly', priority: 0.9 },
     { path: '/work', lastModified: contentUpdated, changeFrequency: 'weekly', priority: 0.9 },
+    {
+      path: '/videography',
+      lastModified: contentUpdated,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
     {
       path: '/photography',
       lastModified: contentUpdated,
@@ -61,7 +70,9 @@ export default async function sitemap() {
   }));
 
   let projectRoutes = [];
+  let videoRoutes = [];
   let serviceRoutes = [];
+  let teamRoutes = [];
 
   try {
     const slugs = await listPublishedProjectSlugs();
@@ -73,6 +84,18 @@ export default async function sitemap() {
     }));
   } catch {
     // DB unreachable — skip dynamic routes rather than crash the sitemap.
+  }
+
+  try {
+    const films = await listPublishedVideoSlugs();
+    videoRoutes = films.map((f) => ({
+      url: `${SITE.url}/videography/${f.slug}`,
+      lastModified: f.updatedAt ? new Date(f.updatedAt) : fallbackModified,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    }));
+  } catch {
+    // Same fallback.
   }
 
   try {
@@ -89,5 +112,28 @@ export default async function sitemap() {
     // Same fallback.
   }
 
-  return [...staticRoutes, ...roleRoutes, ...serviceRoutes, ...projectRoutes, ...articleRoutes];
+  try {
+    const members = await listPublishedTeamMemberSlugs();
+    teamRoutes = members
+      .map((m) => ({ slug: m.slug || slugify(m.name), updatedAt: m.updatedAt }))
+      .filter((m) => m.slug)
+      .map((m) => ({
+        url: `${SITE.url}/team/${m.slug}`,
+        lastModified: m.updatedAt ? new Date(m.updatedAt) : fallbackModified,
+        changeFrequency: 'monthly',
+        priority: 0.5,
+      }));
+  } catch {
+    // Same fallback.
+  }
+
+  return [
+    ...staticRoutes,
+    ...roleRoutes,
+    ...serviceRoutes,
+    ...projectRoutes,
+    ...videoRoutes,
+    ...articleRoutes,
+    ...teamRoutes,
+  ];
 }

@@ -10,11 +10,9 @@ import {
     getPublishedProjectBySlug,
     listPublishedProjectSlugs,
 } from '@/lib/data/projects';
-import {
-    buildImageUrl,
-    buildVideoUrl,
-    buildVideoPoster,
-} from '@/lib/cloudinary';
+import { buildImageUrl } from '@/lib/cloudinary';
+import { VIDEO_KINDS, posterFor, resolveVideoSource } from '@/lib/videoSources';
+import ProjectVideo from '@/components/work/ProjectVideo';
 import { buildMetadata } from '@/lib/seo';
 import { SITE } from '@/lib/site';
 import {
@@ -73,16 +71,15 @@ export default async function ProjectPage({ params }) {
         fullDescription,
         featuredImage,
         gallery = [],
-        videoPublicId,
         servicesProvided = [],
     } = project;
+
+    const video = resolveVideoSource(project);
 
     const heroSrc = featuredImage?.publicId
         ? buildImageUrl(featuredImage.publicId, { width: 1920, crop: 'fill' })
         : null;
-    const posterSrc = videoPublicId
-        ? buildVideoPoster(videoPublicId, { width: 1600 })
-        : heroSrc;
+    const posterSrc = posterFor(project, video, { width: 1600 }) || heroSrc;
     const gallerySrcs = gallery
         .filter((item) => item.publicId)
         .slice(0, 10)
@@ -118,14 +115,15 @@ export default async function ProjectPage({ params }) {
         },
     ];
 
-    if (videoPublicId) {
+    if (video.kind !== VIDEO_KINDS.NONE) {
         pageNodes.push({
             ...videoObjectJsonLd({
                 title,
                 slug,
                 shortDescription,
                 fullDescription,
-                videoUrl: buildVideoUrl(videoPublicId, { width: 1600 }),
+                videoUrl: video.playableUrl,
+                embedUrl: video.embedUrl,
                 posterUrl: posterSrc,
                 uploadDate: project.createdAt
                     ? new Date(project.createdAt).toISOString()
@@ -192,23 +190,17 @@ export default async function ProjectPage({ params }) {
             </section>
 
             {/* Video (if any) */}
-            {videoPublicId && (
+            {video.kind !== VIDEO_KINDS.NONE && (
                 <section className="stage">
                     <div className="stage-layer stage__pool" aria-hidden="true" />
                     <Container className="relative">
                         <div className="rise py-10 md:py-16">
-                            <div className="frame-cinema">
-                                <video
-                                    className="w-full h-auto rounded-lg"
-                                    controls
-                                    playsInline
-                                    preload="metadata"
-                                    poster={buildVideoPoster(videoPublicId, { width: 1600 })}
-                                >
-                                    <source src={buildVideoUrl(videoPublicId, { width: 1600 })} type="video/mp4" />
-                                    Your browser does not support embedded video.
-                                </video>
-                            </div>
+                            <ProjectVideo
+                                video={video}
+                                title={title}
+                                posterSrc={posterSrc}
+                                posterIsLcpCandidate={!heroSrc}
+                            />
                         </div>
                     </Container>
                 </section>

@@ -183,7 +183,7 @@ export default async function RolePage({ role }) {
         <section className="section-padding bg-light">
           <Container>
             <SectionHeading className="rise" eyebrow="Related work" title="Productions like this" />
-            <ul className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="mt-10 grid items-start gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {projects.map((project) => (
                 <li key={String(project._id)} className="rise">
                   <ProjectCard project={project} />

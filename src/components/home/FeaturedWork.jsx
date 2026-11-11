@@ -50,7 +50,7 @@ export default async function FeaturedWork() {
                     </div>
                 ) : (
                     <TiltField className="mt-12">
-                        <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                        <ul className="grid items-start gap-8 sm:grid-cols-2 lg:grid-cols-3">
                             {items.map((project, i) => (
                                 <li key={String(project._id)}>
                                     <Reveal delay={i * STAGGER_STEP}>

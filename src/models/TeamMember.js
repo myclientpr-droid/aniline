@@ -4,6 +4,16 @@ import { PUBLISH_STATUS, TEAM_ROLES } from '@/lib/constants';
 const TeamMemberSchema = new mongoose.Schema(
     {
         name: { type: String, required: true, trim: true, maxlength: 120 },
+        // Not `required`, and unique only where a slug string exists: rows written before this field
+        // carry no `slug` key at all, and a plain unique index would index every one of them as null
+        // and fail to build — leaving no enforcement whatsoever.
+        slug: {
+            type: String,
+            trim: true,
+            lowercase: true,
+            match: /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+            index: { unique: true, partialFilterExpression: { slug: { $type: 'string', $gt: '' } } },
+        },
         role: {
             type: String,
             enum: [...TEAM_ROLES, ''],

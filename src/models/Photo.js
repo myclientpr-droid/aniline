@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { PHOTOGRAPHY_CATEGORIES, PUBLISH_STATUS } from '@/lib/constants';
+import { PHOTOGRAPHY_CATEGORIES, PHOTO_GRID_SHAPES, PUBLISH_STATUS } from '@/lib/constants';
 
 const PhotoSchema = new mongoose.Schema(
     {
@@ -16,6 +16,8 @@ const PhotoSchema = new mongoose.Schema(
         location: { type: String, default: '', trim: true, maxlength: 160 },
         width: { type: Number, min: 1 },
         height: { type: Number, min: 1 },
+        // '' means "derive the tile shape from width/height".
+        gridShape: { type: String, enum: [...PHOTO_GRID_SHAPES, ''], default: '' },
         year: { type: Number, min: 2000, max: 2100 },
         order: { type: Number, default: 0 },
         featured: { type: Boolean, default: false, index: true },

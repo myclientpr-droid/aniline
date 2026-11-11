@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Pencil, Trash2 } from 'lucide-react';
+import { ExternalLink, Pencil, Trash2 } from 'lucide-react';
 import ConfirmDialog from '@/components/admin/ConfirmDialog';
 import TableToolbar from '@/components/admin/TableToolbar';
 import TablePagination from '@/components/admin/TablePagination';
@@ -138,6 +138,16 @@ export default function TeamTable({
                                     </td>
                                     <td className="px-5 py-3">
                                         <div className="flex items-center justify-end gap-1">
+                                            {m.published === 'published' && m.slug && (
+                                                <Link
+                                                    href={`/team/${m.slug}`}
+                                                    target="_blank"
+                                                    className="p-2 rounded-md text-slate hover:text-navy hover:bg-navy/5"
+                                                    aria-label={`View ${m.name} on public site`}
+                                                >
+                                                    <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                                                </Link>
+                                            )}
                                             {canWrite && (
                                                 <>
                                                     <Link

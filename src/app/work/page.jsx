@@ -1,4 +1,5 @@
 import Container from '@/components/ui/Container';
+import Button from '@/components/ui/Button';
 import PageHero from '@/components/layout/PageHero';
 import ProjectCard from '@/components/ui/ProjectCard';
 import EmptyState from '@/components/ui/EmptyState';
@@ -94,7 +95,7 @@ export default async function WorkPage({ searchParams }) {
                         />
                     ) : (
                         <TiltField>
-                            <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                            <ul className="grid items-start gap-8 sm:grid-cols-2 lg:grid-cols-3">
                                 {projects.map((project, i) => (
                                     <li key={String(project._id)} className={`rise rise-${(i % 3) + 1}`}>
                                         <ProjectCard project={project} />
@@ -103,6 +104,11 @@ export default async function WorkPage({ searchParams }) {
                             </ul>
                         </TiltField>
                     )}
+                    <div className="mt-12">
+                        <Button href="/videography" variant="secondary">
+                            View the films
+                        </Button>
+                    </div>
                 </Container>
             </section>
 

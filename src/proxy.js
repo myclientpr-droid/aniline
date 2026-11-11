@@ -11,6 +11,7 @@ const READ_ONLY_LISTS = [
     '/admin/team',
     '/admin/clients',
     '/admin/photos',
+    '/admin/videos',
 ];
 
 export const config = {

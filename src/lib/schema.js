@@ -235,12 +235,14 @@ export function roleServiceJsonLd(role) {
 }
 
 /**
- * VideoObject. Google requires uploadDate and thumbnailUrl; duration is omitted because the
- * project model does not store it, and a guessed duration is worse than none.
- * @param {{ title: string, slug: string, shortDescription?: string, fullDescription?: string, videoUrl?: string, posterUrl?: string, uploadDate?: string }} project
+ * VideoObject. Google requires uploadDate and thumbnailUrl; duration is emitted only when the record
+ * stores one, because a guessed duration is worse than none.
+ * `contentUrl` is only ever a directly fetchable media file — an embedded player has `embedUrl`.
+ * `path` overrides the page the video lives on; a film on /videography is not a project on /work.
+ * @param {{ title: string, slug: string, path?: string, shortDescription?: string, fullDescription?: string, videoUrl?: string, embedUrl?: string, posterUrl?: string, uploadDate?: string, duration?: string }} project
  */
 export function videoObjectJsonLd(project) {
-  const url = `${SITE.url}/work/${project.slug}`;
+  const url = project.path ? `${SITE.url}${project.path}` : `${SITE.url}/work/${project.slug}`;
   return {
     '@type': 'VideoObject',
     '@id': `${url}#video`,
@@ -249,6 +251,8 @@ export function videoObjectJsonLd(project) {
     thumbnailUrl: project.posterUrl ? [project.posterUrl] : undefined,
     uploadDate: project.uploadDate,
     contentUrl: project.videoUrl || undefined,
+    ...(project.embedUrl ? { embedUrl: project.embedUrl } : {}),
+    ...(project.duration ? { duration: project.duration } : {}),
     url,
     publisher: { '@id': ORG_ID },
     creator: { '@id': SERVICE_ID },
@@ -336,8 +340,11 @@ export function personNodes(members) {
         ? buildImageUrl(m.photo.publicId, { width: 800, height: 800, crop: 'fill' })
         : undefined;
       const sameAs = [m.social?.linkedin, m.social?.instagram].filter(Boolean);
+      // Placeholder rows have no slug and therefore no page to identify them by.
+      const url = m.slug ? new URL(`/team/${m.slug}`, SITE.url).toString() : undefined;
       return {
         '@type': 'Person',
+        ...(url ? { '@id': `${url}#person`, url } : {}),
         name: m.name,
         ...(m.role ? { jobTitle: m.role } : {}),
         ...(m.bio ? { description: m.bio } : {}),

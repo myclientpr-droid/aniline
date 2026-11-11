@@ -6,6 +6,7 @@ import { countServices } from '@/lib/data/services';
 import { countTeamMembers } from '@/lib/data/team';
 import { countClients } from '@/lib/data/clients';
 import { countPhotos } from '@/lib/data/photos';
+import { countVideos } from '@/lib/data/videos';
 import { countInquiries, listRecentInquiries } from '@/lib/data/inquiries';
 import { getAuthorizedAdminUser } from '@/lib/adminAccess';
 import { redirect } from 'next/navigation';
@@ -23,13 +24,14 @@ export default async function AdminDashboardPage() {
     if (!owner) redirect('/admin/login');
     if (owner.role !== 'owner') redirect('/admin/projects');
 
-    const [projects, services, team, clients, photos, inquiries, recent] =
+    const [projects, services, team, clients, photos, videos, inquiries, recent] =
         await Promise.all([
             safe(countProjects(), { total: 0, published: 0, drafts: 0 }),
             safe(countServices(), { total: 0, published: 0, drafts: 0 }),
             safe(countTeamMembers(), { total: 0, published: 0, drafts: 0 }),
             safe(countClients(), { total: 0, published: 0, drafts: 0 }),
             safe(countPhotos(), { total: 0, published: 0, drafts: 0 }),
+            safe(countVideos(), { total: 0, published: 0, drafts: 0 }),
             safe(countInquiries(), { total: 0, new: 0, reviewed: 0, archived: 0 }),
             safe(listRecentInquiries(5), []),
         ]);
@@ -41,7 +43,8 @@ export default async function AdminDashboardPage() {
             <div>
                 <h1 className="text-navy text-2xl md:text-3xl">Welcome back{greeting}.</h1>
                 <p className="text-slate mt-2">
-                    Manage projects, services, team, clients, photography, and inquiries.
+                    Manage projects, services, team, clients, videography, photography, and
+                    inquiries.
                 </p>
             </div>
 
@@ -50,7 +53,8 @@ export default async function AdminDashboardPage() {
                 <h2 id="content-heading" className="sr-only">
                     Content overview
                 </h2>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+                {/* Six cards: three columns divides them evenly, five would strand the sixth. */}
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     <StatCard
                         label="Projects"
                         value={projects.total}
@@ -74,6 +78,12 @@ export default async function AdminDashboardPage() {
                         value={clients.total}
                         sublabel={`${clients.published} published \u00b7 ${clients.drafts} draft`}
                         href="/admin/clients"
+                    />
+                    <StatCard
+                        label="Videography"
+                        value={videos.total}
+                        sublabel={`${videos.published} published \u00b7 ${videos.drafts} draft`}
+                        href="/admin/videos"
                     />
                     <StatCard
                         label="Photography"

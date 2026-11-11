@@ -1,5 +1,9 @@
 import mongoose from 'mongoose';
-import { PROJECT_CATEGORIES, PUBLISH_STATUS } from '@/lib/constants';
+import {
+    PROJECT_CATEGORIES,
+    PROJECT_VIDEO_ASPECT_RATIOS,
+    PUBLISH_STATUS,
+} from '@/lib/constants';
 
 const MediaSchema = new mongoose.Schema(
     {
@@ -42,6 +46,11 @@ const ProjectSchema = new mongoose.Schema(
 
         videoUrl: { type: String, default: '', trim: true },
         videoPublicId: { type: String, default: '', trim: true },
+        videoAspectRatio: {
+            type: String,
+            enum: [...PROJECT_VIDEO_ASPECT_RATIOS, ''],
+            default: PROJECT_VIDEO_ASPECT_RATIOS[0],
+        },
 
         servicesProvided: { type: [String], default: [] },
 

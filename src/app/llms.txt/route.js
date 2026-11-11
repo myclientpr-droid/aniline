@@ -38,6 +38,7 @@ address; work is coordinated remotely and on site.
 - [About](${SITE.url}/about)
 - [Services](${SITE.url}/services)
 - [Our Work](${SITE.url}/work)
+- [Videography](${SITE.url}/videography): Films, start to finish \u2014 documentary, campaign, wedding and event films.
 - [Photography](${SITE.url}/photography)
 - [Clients](${SITE.url}/clients)
 - [Team](${SITE.url}/team)

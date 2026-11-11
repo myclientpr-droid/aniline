@@ -13,6 +13,15 @@ const CLOUD_NAME =
 const BASE = `https://res.cloudinary.com/${CLOUD_NAME}`;
 
 /**
+ * A public ID never carries a protocol. When one does, an admin pasted a video link into the
+ * Cloudinary field, and building a URL from it would 404 as "no supported format" in the player.
+ * `@/lib/videoSources` recognises those links; the builders just refuse to mangle them.
+ */
+function isPlayablePublicId(value) {
+    return typeof value === 'string' && value.length > 0 && !/^(?:https?:)?\/\//i.test(value);
+}
+
+/**
  * Build an optimized image URL.
  * @param {string} publicId - Cloudinary public ID (no extension)
  * @param {object} [opts]
@@ -74,7 +83,7 @@ export function buildResponsiveImage(publicId, widths = [640, 960, 1280, 1600, 1
  * @returns {string}
  */
 export function buildVideoUrl(publicId, opts = {}) {
-    if (!publicId) return '';
+    if (!isPlayablePublicId(publicId)) return '';
     const { width, quality = 'auto:good' } = opts;
     const transforms = [`f_auto`, `q_${quality}`, width ? `w_${width}` : null]
         .filter(Boolean)
@@ -87,10 +96,15 @@ export function buildVideoUrl(publicId, opts = {}) {
  * @param {string} publicId
  * @param {object} [opts]
  * @param {number} [opts.width=1280]
+ * @param {number} [opts.height] - crops to a target ratio instead of trusting the source ratio
  * @returns {string}
  */
 export function buildVideoPoster(publicId, opts = {}) {
-    if (!publicId) return '';
-    const { width = 1280 } = opts;
-    return `${BASE}/video/upload/so_0,w_${width},c_fill,q_auto:good,f_auto/${publicId}.jpg`;
+    if (!isPlayablePublicId(publicId)) return '';
+    const { width = 1280, height } = opts;
+    const transforms = ['so_0', `w_${width}`];
+    if (height) transforms.push(`h_${height}`, 'c_fill', 'g_auto');
+    else transforms.push('c_fill');
+    transforms.push('q_auto:good', 'f_auto');
+    return `${BASE}/video/upload/${transforms.join(',')}/${publicId}.jpg`;
 }

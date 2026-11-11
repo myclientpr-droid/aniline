@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { validateTeamMember } from '@/lib/adminValidation';
-import { createTeamMember } from '@/lib/data/team';
+import { createTeamMember, slugExistsForTeamMember } from '@/lib/data/team';
+import { slugify, uniqueSlug } from '@/lib/slug';
 import { authorizeAdminRequest } from '@/lib/adminAccess';
 
 export const runtime = 'nodejs';
@@ -24,11 +25,35 @@ export async function POST(request) {
         );
     }
 
+    // A name outside Latin script slugifies to nothing, and `uniqueSlug` would throw and surface as
+    // a 500 for what is really a missing field.
+    if (!slugify(value.slug || value.name)) {
+        return NextResponse.json(
+            {
+                ok: false,
+                error: 'Please provide a slug.',
+                errors: { slug: 'Please provide a slug.' },
+            },
+            { status: 422 }
+        );
+    }
+
     try {
-        const { id } = await createTeamMember(value);
+        const { id } = await createTeamMember({
+            ...value,
+            slug: await uniqueSlug(value.slug || value.name, (s) =>
+                slugExistsForTeamMember(s, null)
+            ),
+        });
         return NextResponse.json({ ok: true, id }, { status: 201 });
     } catch (err) {
         console.error('[admin/team POST]', err);
+        if (err?.code === 11000) {
+            return NextResponse.json(
+                { ok: false, error: 'A team member with this slug already exists.' },
+                { status: 409 }
+            );
+        }
         return NextResponse.json(
             { ok: false, error: 'Could not create the team member.' },
             { status: 500 }

@@ -1,15 +1,80 @@
 import { withDB } from '@/lib/mongodb';
+import { connection } from 'next/server';
 import TeamMember from '@/models/TeamMember';
 import { PUBLISH_STATUS } from '@/lib/constants';
 import { escapeRegex, serializeDoc } from '@/lib/mongoQuery';
+import { slugify } from '@/lib/slug';
+
+/**
+ * Rows written before the slug field carry no slug at all; they resolve one from the name at read
+ * time, so existing members are linkable without a migration and without anyone re-saving them.
+ * @param {any} member
+ */
+function healSlug(member) {
+    if (!member) return member;
+    const stored = typeof member.slug === 'string' ? member.slug.trim() : '';
+    return { ...member, slug: stored || slugify(member.name) };
+}
 
 export async function listPublishedTeamMembers() {
+    await connection();
     return withDB(() =>
         TeamMember.find({ published: PUBLISH_STATUS.PUBLISHED })
             .sort({ order: 1, name: 1 })
             .lean()
             .then(serializeDoc)
+            .then((rows) => rows.map(healSlug))
     );
+}
+
+/**
+ * Deliberately free of `await connection()`: this feeds generateStaticParams and the sitemap, and
+ * awaiting it in those paths would make every member page dynamic.
+ * @returns {Promise<Array<{ slug: string, name: string, updatedAt?: string }>>}
+ */
+export async function listPublishedTeamMemberSlugs() {
+    return withDB(() =>
+        TeamMember.find(
+            { published: PUBLISH_STATUS.PUBLISHED },
+            { slug: 1, name: 1, updatedAt: 1 }
+        )
+            .lean()
+            .then((rows) => rows.map(healSlug))
+    );
+}
+
+/**
+ * @param {string} slug
+ */
+export async function getPublishedTeamMemberBySlug(slug) {
+    if (!slug || typeof slug !== 'string') return null;
+    return withDB(async () => {
+        const direct = await TeamMember.findOne({
+            slug,
+            published: PUBLISH_STATUS.PUBLISHED,
+        })
+            .lean()
+            .then(serializeDoc);
+        if (direct) return healSlug(direct);
+
+        // An explicit slug always wins; only rows that never had one are matched by name.
+        const rows = await TeamMember.find({ published: PUBLISH_STATUS.PUBLISHED })
+            .lean()
+            .then(serializeDoc);
+        return healSlug(rows.find((row) => !row.slug && slugify(row.name) === slug) || null);
+    });
+}
+
+/**
+ * @param {string} slug
+ * @param {string|null} excludeId
+ */
+export async function slugExistsForTeamMember(slug, excludeId = null) {
+    return withDB(async () => {
+        const filter = { slug };
+        if (excludeId) filter._id = { $ne: excludeId };
+        return (await TeamMember.countDocuments(filter)) > 0;
+    });
 }
 
 export async function countTeamMembers() {
@@ -43,7 +108,7 @@ export async function listAllTeamMembers({ page = 1, pageSize = 20, q = '', stat
             TeamMember.countDocuments(filter),
         ]);
         return {
-            items: serializeDoc(items),
+            items: serializeDoc(items).map(healSlug),
             total,
             page,
             pageSize,
@@ -54,7 +119,9 @@ export async function listAllTeamMembers({ page = 1, pageSize = 20, q = '', stat
 
 export async function getTeamMemberById(id) {
     if (!id) return null;
-    return withDB(() => TeamMember.findById(id).lean().then(serializeDoc));
+    return withDB(() =>
+        TeamMember.findById(id).lean().then(serializeDoc).then(healSlug)
+    );
 }
 
 export async function createTeamMember(data) {

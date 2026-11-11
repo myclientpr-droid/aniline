@@ -6,7 +6,13 @@ import Button from '@/components/ui/Button';
 import FormField from '@/components/admin/FormField';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 import { useToast } from '@/components/admin/ToastProvider';
-import { PHOTOGRAPHY_CATEGORIES } from '@/lib/constants';
+import { PHOTOGRAPHY_CATEGORIES, PHOTO_GRID_SHAPES } from '@/lib/constants';
+
+const GRID_SHAPE_LABELS = {
+    '4:5': '4:5 (portrait)',
+    '4:3': '4:3',
+    '3:2': '3:2 (landscape)',
+};
 
 const EMPTY = {
     image: null,
@@ -15,6 +21,7 @@ const EMPTY = {
     alt: '',
     caption: '',
     location: '',
+    gridShape: '',
     year: '',
     order: '',
     featured: false,
@@ -37,6 +44,7 @@ function fromPhoto(photo) {
         alt: photo.alt || '',
         caption: photo.caption || '',
         location: photo.location || '',
+        gridShape: photo.gridShape || '',
         year: photo.year ?? '',
         order: photo.order ?? '',
         featured: Boolean(photo.featured),
@@ -69,6 +77,7 @@ export default function PhotoForm({ photo }) {
         height: values.image?.height,
         caption: values.caption,
         location: values.location,
+        gridShape: values.gridShape,
         year: values.year === '' ? undefined : Number(values.year),
         order: values.order === '' ? 0 : Number(values.order),
         featured: values.featured,
@@ -178,6 +187,19 @@ export default function PhotoForm({ photo }) {
                         options={[
                             { value: 'draft', label: 'Draft' },
                             { value: 'published', label: 'Published' },
+                        ]}
+                    />
+                    <FormField
+                        id="gridShape"
+                        label="Grid shape"
+                        as="select"
+                        value={values.gridShape}
+                        onChange={update('gridShape')}
+                        error={errors.gridShape}
+                        hint="Auto matches the tile to the photo's own proportions."
+                        options={[
+                            { value: '', label: 'Auto (from dimensions)' },
+                            ...PHOTO_GRID_SHAPES.map((s) => ({ value: s, label: GRID_SHAPE_LABELS[s] })),
                         ]}
                     />
                 </div>

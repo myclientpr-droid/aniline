@@ -11,6 +11,7 @@ const ALLOWED_FOLDERS = new Set([
     'aniline/admin/team',
     'aniline/admin/services',
     'aniline/admin/photos',
+    'aniline/admin/videos',
     'aniline/admin/misc',
 ]);
 

@@ -7,7 +7,7 @@ import FormField from '@/components/admin/FormField';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 import MediaListEditor from '@/components/admin/MediaListEditor';
 import { useToast } from '@/components/admin/ToastProvider';
-import { PROJECT_CATEGORIES } from '@/lib/constants';
+import { PROJECT_CATEGORIES, PROJECT_VIDEO_ASPECT_RATIOS } from '@/lib/constants';
 import { slugify } from '@/lib/slug';
 
 const EMPTY = {
@@ -21,6 +21,7 @@ const EMPTY = {
     year: '',
     videoPublicId: '',
     videoUrl: '',
+    videoAspectRatio: PROJECT_VIDEO_ASPECT_RATIOS[0],
     featured: false,
     published: 'draft',
     servicesProvidedText: '',
@@ -43,6 +44,7 @@ function fromProject(project) {
         year: project.year ?? '',
         videoPublicId: project.videoPublicId || '',
         videoUrl: project.videoUrl || '',
+        videoAspectRatio: project.videoAspectRatio || PROJECT_VIDEO_ASPECT_RATIOS[0],
         featured: Boolean(project.featured),
         published: project.published || 'draft',
         servicesProvidedText: Array.isArray(project.servicesProvided)
@@ -87,6 +89,7 @@ export default function ProjectForm({ project }) {
         year: values.year === '' ? undefined : Number(values.year),
         videoPublicId: values.videoPublicId,
         videoUrl: values.videoUrl,
+        videoAspectRatio: values.videoAspectRatio,
         featured: values.featured,
         published: values.published,
         servicesProvided: values.servicesProvidedText
@@ -281,7 +284,7 @@ export default function ProjectForm({ project }) {
                     label="Video public ID"
                     value={values.videoPublicId}
                     onChange={update('videoPublicId')}
-                    hint="Cloudinary public ID for the video (no extension)."
+                    hint="Cloudinary public ID only, no extension and no URL. For YouTube or Vimeo use the link field below."
                 />
                 <FormField
                     id="videoUrl"
@@ -290,7 +293,20 @@ export default function ProjectForm({ project }) {
                     value={values.videoUrl}
                     onChange={update('videoUrl')}
                     error={errors.videoUrl}
-                    hint="Optional: YouTube/Vimeo URL if not hosted on Cloudinary."
+                    hint="YouTube or Vimeo link. Takes precedence over the Cloudinary ID, and plays through a click-to-load player so nothing loads until a visitor presses play."
+                />
+                <FormField
+                    id="videoAspectRatio"
+                    label="Video aspect ratio"
+                    as="select"
+                    value={values.videoAspectRatio}
+                    onChange={update('videoAspectRatio')}
+                    error={errors.videoAspectRatio}
+                    options={PROJECT_VIDEO_ASPECT_RATIOS.map((ratio) => ({
+                        value: ratio,
+                        label: ratio === '9:16' ? '9:16 (Vertical, phone)' : '16:9 (Landscape)',
+                    }))}
+                    hint="Shapes the player on the project page and this project's tile in the portfolio grids."
                 />
             </div>
 

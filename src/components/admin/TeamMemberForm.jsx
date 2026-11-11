@@ -7,9 +7,11 @@ import FormField from '@/components/admin/FormField';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 import { useToast } from '@/components/admin/ToastProvider';
 import { TEAM_ROLES } from '@/lib/constants';
+import { slugify } from '@/lib/slug';
 
 const EMPTY = {
     name: '',
+    slug: '',
     role: '',
     bio: '',
     expertiseText: '',
@@ -24,6 +26,7 @@ function fromMember(member) {
     if (!member) return EMPTY;
     return {
         name: member.name || '',
+        slug: member.slug || '',
         role: member.role || '',
         bio: member.bio || '',
         expertiseText: Array.isArray(member.expertise) ? member.expertise.join(', ') : '',
@@ -50,8 +53,14 @@ export default function TeamMemberForm({ member }) {
         if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
     };
 
+    const autoSlug = () => {
+        if (!values.name) return;
+        setValues((prev) => ({ ...prev, slug: slugify(prev.name) }));
+    };
+
     const buildPayload = () => ({
         name: values.name,
+        slug: values.slug || slugify(values.name),
         role: values.role,
         bio: values.bio,
         expertise: values.expertiseText.split(',').map((s) => s.trim()).filter(Boolean),
@@ -105,6 +114,23 @@ export default function TeamMemberForm({ member }) {
                         onChange={update('name')}
                         error={errors.name}
                     />
+                    <div>
+                        <FormField
+                            id="slug"
+                            label="Slug"
+                            value={values.slug}
+                            onChange={update('slug')}
+                            error={errors.slug}
+                            hint="URL segment, e.g. member-name"
+                        />
+                        <button
+                            type="button"
+                            onClick={autoSlug}
+                            className="text-xs font-semibold text-orange hover:text-navy mt-1"
+                        >
+                            Generate from name
+                        </button>
+                    </div>
                     <FormField
                         id="role"
                         label="Role"

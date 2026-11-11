@@ -34,6 +34,7 @@ export const NAV_LINKS = [
     { label: 'About', href: '/about' },
     { label: 'Services', href: '/services' },
     { label: 'Our Work', href: '/work' },
+    { label: 'Videography', href: '/videography' },
     { label: 'Photography', href: '/photography' },
     { label: 'Clients', href: '/clients' },
     { label: 'Our Team', href: '/team' },
@@ -41,7 +42,7 @@ export const NAV_LINKS = [
 ];
 
 /** Bumped when the core marketing pages' copy changes; the sitemap must not claim "now". */
-export const CONTENT_UPDATED = '2026-11-08';
+export const CONTENT_UPDATED = '2026-11-11';
 
 export const PRIMARY_CTA = {
     label: 'Start a Project',
@@ -529,6 +530,30 @@ export const PHOTOGRAPHY_PAGE = {
     empty: {
         title: 'No photographs yet',
         message: 'New photography is being added. Please check back shortly.',
+    },
+};
+
+/* ------------------------------------------------------------------ */
+/* Videography page                                                    */
+/* ------------------------------------------------------------------ */
+
+export const VIDEOGRAPHY_PAGE = {
+    hero: {
+        eyebrow: 'Videography',
+        title: 'Films, start to finish.',
+        subheading:
+            'Documentary, campaign, wedding, and event films \u2014 shot, cut, and graded for the screen.',
+    },
+    // The featured band. Kept off the hero copy because it labels a film, not the page.
+    band: {
+        label: 'Latest film',
+    },
+    filter: {
+        allLabel: 'All films',
+    },
+    empty: {
+        title: 'No films yet',
+        message: 'New films are being published. Please check back shortly.',
     },
 };
 

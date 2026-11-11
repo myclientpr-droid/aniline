@@ -4,6 +4,34 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { buildImageUrl } from '@/lib/cloudinary';
+import { photoShape } from '@/lib/photoShapes';
+
+/*
+ * Justified rows: flex-basis and flex-grow are both the tile's own ratio, so the width it
+ * ends up with is always ratio x the row's single shared height — mixed shapes pack into one
+ * gapless line with no JS. The calc() basis only guesses how many tiles fit; the browser
+ * resolves the real height, so these constants never need recomputing.
+ */
+const TILES = {
+    '4:5': {
+        aspect: 'aspect-[4/5]',
+        grow: 'grow-[0.8]',
+        basis: 'basis-[calc(0.8*var(--row-h))]',
+        sizes: '(min-width: 1152px) 15vw, (min-width: 768px) 22vw, 89vw',
+    },
+    '4:3': {
+        aspect: 'aspect-[4/3]',
+        grow: 'grow-[1.3333]',
+        basis: 'basis-[calc(1.3333*var(--row-h))]',
+        sizes: '(min-width: 1152px) 19vw, (min-width: 768px) 45vw, 89vw',
+    },
+    '3:2': {
+        aspect: 'aspect-[3/2]',
+        grow: 'grow-[1.5]',
+        basis: 'basis-[calc(1.5*var(--row-h))]',
+        sizes: '(min-width: 1152px) 25vw, (min-width: 768px) 45vw, 89vw',
+    },
+};
 
 /**
  * @param {{
@@ -13,6 +41,9 @@ import { buildImageUrl } from '@/lib/cloudinary';
  *     alt?: string,
  *     caption?: string,
  *     publicId: string,
+ *     width?: number,
+ *     height?: number,
+ *     gridShape?: string,
  *   }>,
  * }} props
  */
@@ -56,26 +87,35 @@ export default function Gallery({ photos }) {
     return (
         <>
             {/* Grid */}
-            <ul className="tile-grid grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
+            <ul className="tile-grid flex flex-wrap gap-3 md:gap-4 [--row-h:16rem] md:[--row-h:12rem]">
                 {photos.map((photo, i) => {
-                    const thumb = buildImageUrl(photo.publicId, { width: 600, crop: 'fill' });
+                    const { value: shape, ratio } = photoShape(photo);
+                    const tile = TILES[shape];
+                    const thumb = buildImageUrl(photo.publicId, {
+                        width: 600,
+                        height: Math.round(600 / ratio),
+                        crop: 'fill',
+                    });
                     const alt = photo.alt || photo.title || `Photograph ${i + 1}`;
                     return (
-                        <li key={String(photo._id || photo.publicId)} className={`rise rise-${(i % 3) + 1}`}>
+                        <li
+                            key={String(photo._id || photo.publicId)}
+                            className={`rise rise-${(i % 3) + 1} ${tile.grow} ${tile.basis}`}
+                        >
                             {/* Three boxes, three jobs: the li reveals, the div owns the 3D, the button
                                 clips. Any mask on the tilt box would flatten it back to 2D. */}
                             <div data-tilt="" className="tilt-card specular rounded-lg">
                                 <button
                                     type="button"
                                     onClick={() => setOpenIndex(i)}
-                                    className="group tile-dim elevate-1 relative block w-full aspect-square overflow-hidden rounded-lg bg-navy-dark focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange"
+                                    className={`group tile-dim elevate-1 relative block w-full ${tile.aspect} overflow-hidden rounded-lg bg-navy-dark focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange`}
                                     aria-label={`Open ${alt}`}
                                 >
                                     <Image
                                         src={thumb}
                                         alt={alt}
                                         fill
-                                        sizes="(min-width: 768px) 33vw, 100vw"
+                                        sizes={tile.sizes}
                                         className="object-cover transition-transform duration-500 ease-[var(--ease-cinematic)] group-hover:scale-[1.03]"
                                     />
                                 </button>

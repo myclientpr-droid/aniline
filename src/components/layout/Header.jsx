@@ -36,7 +36,7 @@ export default function Header() {
 
                     {/* Desktop nav */}
                     <nav aria-label="Primary" className="hidden lg:block">
-                        <ul className="flex items-center gap-1">
+                        <ul className="flex items-center gap-0.5">
                             {NAV_LINKS.map((link) => {
                                 const active =
                                     link.href === '/'
@@ -47,8 +47,8 @@ export default function Header() {
                                         <Link
                                             href={link.href}
                                             aria-current={active ? 'page' : undefined}
-                                            className={`relative px-3 py-2 rounded-md text-md font-bold transition-colors ${active
-                                                ? "text-orange after:absolute after:inset-x-3 after:-bottom-1 after:h-[3px] after:rounded-full after:bg-orange after:content-['']"
+                                            className={`relative px-2.5 py-2 rounded-md text-md font-bold transition-colors ${active
+                                                ? "text-orange after:absolute after:inset-x-2.5 after:-bottom-1 after:h-[3px] after:rounded-full after:bg-orange after:content-['']"
                                                 : 'text-zinc-50 hover:text-orange'
                                                 }`}
                                         >
