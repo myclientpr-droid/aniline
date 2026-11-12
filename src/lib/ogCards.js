@@ -62,6 +62,21 @@ export function teamMemberCard(member) {
     });
 }
 
+/**
+ * The developer page card. Not `teamMemberCard`: its `eyebrow` says "Team", which would re-assert
+ * the membership the page's structured data deliberately avoids.
+ * @param {{ name: string, jobTitle?: string }} person
+ */
+export function developerCard(person) {
+    return renderOgCard({
+        eyebrow: 'About the developer',
+        title: person.name,
+        subtitle: person.jobTitle,
+        // No imageUrl: there is no portrait, and og.js paints the navy radial when one is absent.
+        footer: SITE.name,
+    });
+}
+
 /** @param {{ title: string, excerpt?: string, heroUrl?: string, dateModified?: string }} article */
 export function articleCard(article) {
     return renderOgCard({

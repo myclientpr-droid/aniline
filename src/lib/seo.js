@@ -33,6 +33,11 @@ export function siteMetadata() {
         applicationName: SITE.name,
         alternates: { canonical: '/' },
         robots: ROBOTS,
+        // Search Console ownership proof. Absent env var means no tag is emitted at all, so an
+        // unconfigured deployment stays clean rather than publishing an empty content value.
+        ...(process.env.GSC_SITE_VERIFICATION
+            ? { verification: { google: process.env.GSC_SITE_VERIFICATION } }
+            : {}),
         formatDetection: { telephone: false, address: false, email: false },
         openGraph: {
             type: 'website',

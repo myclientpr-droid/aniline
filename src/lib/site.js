@@ -15,14 +15,14 @@ export const SITE = {
         region: 'Cox\u2019s Bazar',
     },
     contact: {
-        email: '',
+        email: 'anilineproduction@gmail.com',
         phone: '',
         whatsapp: '+8801875558462',
         address: '',
     },
     social: {
         facebook: 'https://www.facebook.com/share/1YD1LswSkN/',
-        instagram: '',
+        instagram: 'https://www.instagram.com/aniline_20',
         youtube: 'https://youtube.com/@aniline.24',
         linkedin: '',
         tiktok: '',
@@ -615,6 +615,112 @@ export const CLIENTS_PAGE = {
 };
 
 /* ------------------------------------------------------------------ */
+/* About Developer page                                                */
+/* ------------------------------------------------------------------ */
+
+/** This page's copy is revised on its own schedule, so it carries its own date rather than
+    bumping CONTENT_UPDATED, which would falsely re-date every other page in the sitemap. */
+export const DEVELOPER_UPDATED = '2026-11-11';
+
+export const DEVELOPER_PAGE = {
+    hero: {
+        eyebrow: 'Developer',
+        title: 'Mohammed Ismail',
+        subheading:
+            'Independent full-stack web and Android developer in Bangladesh \u2014 I build and maintain this site.',
+    },
+
+    // Deliberately not inside SITE and not a TeamMember row: he is independent, so the studio
+    // publishes no employment relationship and no studio contact channel for him. His personal
+    // Facebook and WhatsApp must never reach SITE.social / SITE.contact, which feed the
+    // organization-level sameAs, the footer, the contact page and llms.txt.
+    person: {
+        name: 'Mohammed Ismail',
+        jobTitle: 'Full-Stack Web Developer and Android Software Developer',
+        country: 'BD',
+        // Only the two disciplines his own copy names. No framework or stack claims.
+        knowsAbout: ['Full-stack web development', 'Android software development'],
+        portfolio: 'https://mdismaildev.netlify.app',
+        facebook: 'https://www.facebook.com/mdaismail.it',
+        whatsapp: '+8801879449789',
+    },
+
+    intro: {
+        eyebrow: 'Who I am',
+        title: 'Software that communities actually use.',
+        body: [
+            'I\u2019m Mohammed Ismail, an independent Full-Stack Web Developer and Android Software Developer based in Bangladesh. I\u2019m passionate about creating modern, practical, and user-friendly digital solutions that address real-world challenges.',
+            'I enjoy transforming ideas into meaningful digital products, building applications that simplify everyday tasks, connect communities, and make information and resources more accessible.',
+        ],
+    },
+
+    focus: {
+        eyebrow: 'Currently focused on',
+        statement:
+            'Building innovative web applications, Android software, and meaningful digital products.',
+    },
+
+    projects: {
+        eyebrow: 'Projects',
+        title: 'Designed and developed, independently.',
+        // His wording, stopped before the enumeration so the six names appear once on the page
+        // — in the list below — rather than twice in one section.
+        description:
+            'Throughout my development journey, I have independently designed and developed several projects.',
+        // Names only: he supplied no URLs or descriptions, so nothing is invented and no card
+        // dead-links. Add `href`/`description` here when they exist.
+        items: [
+            'Myanmar Book Hub',
+            'RNEB Official Website',
+            'RohLex Android App',
+            'Aurbina Scholars Hub',
+            'VitalDrop',
+            'EduBoard',
+        ],
+    },
+
+    principles: {
+        eyebrow: 'How I work',
+        // Shortened from his sentence so the column balances; the full wording is in the body below.
+        title: 'Reliable, impactful products.',
+        body: [
+            'I believe in continuous learning, creativity, and practical problem-solving. My goal is to build reliable and impactful digital products that create meaningful value for individuals and communities.',
+        ],
+    },
+
+    // The internal links that keep a footer-only page from being an SEO orphan. Both targets
+    // resolve from SERVICES_PAGE.fallbackServices even when the database is unreachable, and the
+    // shape matches `ServiceCard`, which builds the `/services/${slug}` href itself.
+    studio: {
+        eyebrow: 'Digital work at AniLine',
+        title: 'The same care behind the studio\u2019s websites and software.',
+        description:
+            'AniLine\u2019s digital services sit alongside its film and photography work \u2014 planned against the outcome, then delivered ready to use.',
+        items: [
+            {
+                title: 'Website Design & Development',
+                slug: 'website-design-development',
+                shortDescription:
+                    'Site architecture, front-end, and the delivery details that make a launch stick.',
+            },
+            {
+                title: 'Software Development',
+                slug: 'software-development',
+                shortDescription:
+                    'Applications built end-to-end, from the data model to the interface people use.',
+            },
+        ],
+    },
+
+    links: {
+        eyebrow: 'Connect',
+        title: 'Portfolio and direct contact.',
+        description:
+            'For development work, reach me directly. For a production, write to the studio instead.',
+    },
+};
+
+/* ------------------------------------------------------------------ */
 /* Legal pages                                                         */
 /* Two documents that cite each other's section numbers, so both live  */
 /* here: a cross-reference is one object access, not a hand-typed      */
@@ -622,11 +728,11 @@ export const CLIENTS_PAGE = {
 /* ------------------------------------------------------------------ */
 
 export const LEGAL = {
-    effectiveDate: '2026-11-08',
+    effectiveDate: '2026-11-12',
     // Bump whenever the wording changes materially — the on-page notice reads from this.
-    version: '1.0',
+    version: '1.1',
     // Date the site's structure last changed in a way that touched either document.
-    platformLastUpdated: '2026-11-08',
+    platformLastUpdated: '2026-11-12',
     responsePromise: 'We aim to reply to any privacy or legal request within 30 days.',
     privacyHref: '/privacy',
     termsHref: '/terms',
@@ -659,8 +765,8 @@ export const PRIVACY_PAGE = {
     summary: {
         title: 'The short version',
         items: [
-            { title: 'No advertising trackers', description: 'No ad pixels or third-party analytics scripts on this site.' },
-            { title: 'Three cookies, all ours', description: 'A security check, a session for administrators, and one you can dismiss.' },
+            { title: 'Measurement, not advertising', description: 'Google Analytics counts page visits. No ad pixels, no advertising profiling, and we never sell or share what we see.' },
+            { title: 'Our cookies, plus two more', description: 'Three that are ours \u2014 a security check, an administrator session, a dismissal flag \u2014 and two that tell visits apart.' },
             { title: 'Forms only, no accounts', description: 'Visitors never create accounts. We store what you type into a form.' },
             { title: 'Your story is yours', description: 'Footage, photos, and footage-derived material stay private unless we agree otherwise in writing.' },
         ],
@@ -694,7 +800,7 @@ export const PRIVACY_PAGE = {
                 },
                 {
                     title: 'Technical information kept by our providers',
-                    description: 'Our hosting and media providers process your IP address and browser information to deliver pages and media, and keep standard server logs for security and diagnostics. We do not maintain analytics of our own.',
+                    description: 'Our hosting and media providers process your IP address and browser information to deliver pages and media, and keep standard server logs for security and diagnostics. Google Analytics records which pages you viewed, which site referred you, and a region inferred from your network address \u2014 Google discards the address itself rather than storing it.',
                 },
                 {
                     title: 'What we deliberately do not collect',
@@ -721,14 +827,15 @@ export const PRIVACY_PAGE = {
             id: 'cookies',
             title: 'Cookies and local storage',
             body: [
-                'This site sets no advertising or analytics cookies. It uses exactly three browser-stored items, all of which come from us:',
+                'Three of the items this site stores in your browser are ours. Google Analytics adds two more, which exist only to tell one visit from another:',
             ],
             items: [
                 { title: 'A security check', description: 'A temporary cookie used on form pages to protect against forged requests. It expires on its own and holds no information about you.' },
                 { title: 'An administrator session', description: 'If a member of our team signs in to the studio admin, a session cookie keeps them signed in for up to seven days. Visitors never receive it.' },
                 { title: 'A dismissal flag', description: 'When you dismiss the cookie notice, a small local-storage entry records that \u2014 so we can stop showing it.' },
+                { title: 'Two analytics counters', description: 'Set by Google Analytics. They carry a random identifier, not your name or email, so we can say how many people read a page rather than which person did.' },
             ],
-            note: 'Because none of these track you, there is no consent banner to click and no preference centre to manage.',
+            note: 'None of these are advertising cookies, and none follow you between websites for advertising. If you would rather not be counted at all, Google publishes an Analytics opt-out add-on for browsers that works here as it does anywhere.',
         },
         {
             id: 'sharing',
@@ -751,13 +858,14 @@ export const PRIVACY_PAGE = {
             id: 'providers',
             title: 'Service providers',
             body: [
-                'A small number of companies keep this site and its enquiries working. None of them are advertising or data-broker services.',
+                'A small number of companies keep this site and its enquiries working. We do not buy data from any of them, and none of them are used to advertise to you.',
             ],
             items: [
                 { title: 'Vercel', description: 'Hosts the website and runs the code. Request logs are kept for security and diagnostics.' },
                 { title: 'MongoDB Atlas', description: 'Stores enquiries, plus the public content shown on the site such as projects, photography, clients, and team details.' },
                 { title: 'Cloudinary', description: 'Hosts images and video. Media is requested through our own domain, and requests pass through the visitor\u2019s browser to Cloudinary\u2019s content network.' },
                 { title: 'WhatsApp (Meta)', description: 'Carries messages if you choose to contact us on WhatsApp, under WhatsApp\u2019s terms.' },
+                { title: 'Google Analytics', description: 'Counts page visits, referring sites, and which journal posts people read, so we know what is worth making more of. We use it for numbers and trends only \u2014 it is not connected to any advertising product, and we cannot see who any individual visitor was.' },
             ],
             note: 'Some of these providers run servers outside your country. By sending us information you understand it may be transferred to and stored in another country with its own data-protection rules.',
         },
@@ -915,7 +1023,7 @@ export const TERMS_PAGE = {
             id: 'third-party',
             title: 'Third-party links and services',
             body: [
-                'This site links to external platforms such as Facebook, YouTube, and WhatsApp, and requests media from our hosting providers. We do not control those services, and their terms and privacy practices are their own. A link is not an endorsement.',
+                'This site links to external platforms such as Facebook, YouTube, and WhatsApp, requests media from our hosting providers, and loads its visitor-counting script from Google. We do not control those services, and their terms and privacy practices are their own. A link is not an endorsement.',
             ],
         },
         {

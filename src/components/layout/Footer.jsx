@@ -18,7 +18,11 @@ const WORK_WITH_US_LINKS = [
   { label: 'Journal', href: '/journal' },
 ];
 
-const FOOTER_EXPLORE = NAV_LINKS.filter((link) => link.href !== '/contact');
+// `NAV_LINKS` feeds the header too, so a footer-only page is appended here instead of added there.
+const FOOTER_EXPLORE = [
+  ...NAV_LINKS.filter((link) => link.href !== '/contact'),
+  { label: 'Developer', href: '/developer' },
+];
 
 export default function Footer() {
   const year = new Date().getFullYear();

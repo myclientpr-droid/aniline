@@ -21,6 +21,7 @@ export const metadata = buildMetadata({
 });
 
 export default function HomePage() {
+
   return (
     <>
       {/* The homepage is the site's front door, so its WebPage node says so and links the studio. */}

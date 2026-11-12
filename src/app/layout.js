@@ -4,7 +4,13 @@ import { siteGraph } from '@/lib/schema';
 import JsonLd from '@/components/seo/JsonLd';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import './globals.css';
+
+// Local dev and preview deployments would otherwise post their traffic to the same property as
+// real visitors, so the snippet is emitted only on a production render.
+const GA_MEASUREMENT_ID =
+  process.env.NODE_ENV === 'production' ? process.env.GA_MEASUREMENT_ID : undefined;
 
 export const metadata = siteMetadata();
 
@@ -40,6 +46,7 @@ export default function RootLayout({ children }) {
           {children}
         </main>
         <Footer />
+        {GA_MEASUREMENT_ID && <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />}
       </body>
     </html>
   );

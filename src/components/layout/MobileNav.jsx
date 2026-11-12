@@ -51,7 +51,7 @@ export default function MobileNav({ open, onClose }) {
             role="dialog"
             aria-modal="true"
             aria-label="Main navigation"
-            className="fixed inset-0 z-50 md:hidden"
+            className="fixed inset-0 z-50 lg:hidden"
         >
             {/* Backdrop */}
             <button
@@ -99,7 +99,8 @@ export default function MobileNav({ open, onClose }) {
                             const active =
                                 link.href === '/'
                                     ? pathname === '/'
-                                    : pathname.startsWith(link.href);
+                                    : pathname === link.href ||
+                                      pathname.startsWith(`${link.href}/`);
                             return (
                                 <li key={link.href}>
                                     <Link

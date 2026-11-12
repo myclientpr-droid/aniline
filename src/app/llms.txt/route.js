@@ -22,6 +22,15 @@ export function GET() {
     .map((a) => `- [${a.title}](${SITE.url}/journal/${a.slug}): ${a.excerpt}`)
     .join('\n');
 
+  const contactLines = [
+    `- Website: ${SITE.url}`,
+    SITE.contact.email && `- Email: ${SITE.contact.email}`,
+    `- WhatsApp: https://wa.me/${SITE.contact.whatsapp.replace(/[^\d]/g, '')}`,
+    SITE.social.facebook && `- Facebook: ${SITE.social.facebook}`,
+    SITE.social.instagram && `- Instagram: ${SITE.social.instagram}`,
+    SITE.social.youtube && `- YouTube: ${SITE.social.youtube}`,
+  ].filter(Boolean);
+
   const body = `# ${SITE.name}
 
 > ${SITE.description}
@@ -45,6 +54,7 @@ address; work is coordinated remotely and on site.
 - [Journal](${SITE.url}/journal)
 - [Start a Project](${SITE.url}/start-a-project)
 - [Contact](${SITE.url}/contact)
+- [About Developer](${SITE.url}/developer): Mohammed Ismail \u2014 independent full-stack web and Android developer; built this site.
 
 ## Hire us by role
 
@@ -60,9 +70,8 @@ ${articles}
 
 ## Contact
 
-- Website: ${SITE.url}
-- WhatsApp: https://wa.me/${SITE.contact.whatsapp.replace(/[^\d]/g, '')}
-${SITE.social.youtube ? `- YouTube: ${SITE.social.youtube}\n` : ''}${SITE.social.facebook ? `- Facebook: ${SITE.social.facebook}\n` : ''}
+${contactLines.join('\n')}
+
 Content last updated: ${CONTENT_UPDATED}
 `;
 

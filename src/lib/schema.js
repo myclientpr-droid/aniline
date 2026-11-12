@@ -132,9 +132,17 @@ function contactPoint() {
 /* ------------------------------------------------------------------ */
 
 /**
- * @param {{ path: string, name: string, description?: string, type?: string, about?: object, primaryImage?: string }} page
+ * @param {{ path: string, name: string, description?: string, type?: string, about?: object, mainEntity?: object, primaryImage?: string }} page
  */
-export function webPageJsonLd({ path, name, description, type = 'WebPage', about, primaryImage }) {
+export function webPageJsonLd({
+  path,
+  name,
+  description,
+  type = 'WebPage',
+  about,
+  mainEntity,
+  primaryImage,
+}) {
   const url = `${SITE.url}${path}`;
   const id = `${url}#webpage`;
   return {
@@ -147,6 +155,7 @@ export function webPageJsonLd({ path, name, description, type = 'WebPage', about
     publisher: { '@id': ORG_ID },
     inLanguage: 'en',
     ...(about ? { about } : {}),
+    ...(mainEntity ? { mainEntity } : {}),
     ...(primaryImage ? { primaryImageOfPage: { '@type': 'ImageObject', url: primaryImage } } : {}),
     mainEntityOfPage: { '@id': id },
   };
@@ -323,6 +332,49 @@ export function faqJsonLd(faqs) {
       name: f.q,
       acceptedAnswer: { '@type': 'Answer', text: f.a },
     })),
+  };
+}
+
+/**
+ * A Person node that asserts no employment. `personNodes()` hardcodes `worksFor` with the studio's
+ * `@id`, which is true of AniLine's crew and false of the independent developer who built the site —
+ * so his page gets its own builder rather than a reused one. Only supplied fields are emitted: a
+ * project link that was never given stays out of the graph, and there is no `image`, because the
+ * studio's logo is not a picture of a person.
+ * @param {{
+ *   name: string,
+ *   jobTitle?: string,
+ *   description?: string,
+ *   path?: string,
+ *   knowsAbout?: string[],
+ *   sameAs?: string[],
+ *   telephone?: string,
+ *   country?: string,
+ *   creations?: string[],
+ * }} person
+ */
+export function personJsonLd(person) {
+  const url = person.path ? new URL(person.path, SITE.url).toString() : undefined;
+  const sameAs = (person.sameAs || []).filter(Boolean);
+  const creations = (person.creations || []).filter(Boolean);
+
+  return {
+    '@type': 'Person',
+    ...(url
+      ? { '@id': `${url}#person`, url, mainEntityOfPage: { '@id': `${url}#webpage` } }
+      : {}),
+    name: person.name,
+    ...(person.jobTitle ? { jobTitle: person.jobTitle } : {}),
+    ...(person.description ? { description: person.description } : {}),
+    ...(person.country
+      ? { address: { '@type': 'PostalAddress', addressCountry: person.country } }
+      : {}),
+    ...(person.knowsAbout?.length ? { knowsAbout: person.knowsAbout } : {}),
+    ...(person.telephone ? { telephone: person.telephone } : {}),
+    ...(sameAs.length ? { sameAs } : {}),
+    ...(creations.length
+      ? { creation: creations.map((name) => ({ '@type': 'CreativeWork', name })) }
+      : {}),
   };
 }
 

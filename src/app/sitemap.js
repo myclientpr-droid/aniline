@@ -5,7 +5,7 @@ import { listPublishedTeamMemberSlugs } from '@/lib/data/team';
 import { listRoles } from '@/content/roles';
 import { listArticles } from '@/content/journal';
 import { slugify } from '@/lib/slug';
-import { CONTENT_UPDATED, LEGAL, SITE } from '@/lib/site';
+import { CONTENT_UPDATED, DEVELOPER_UPDATED, LEGAL, SITE } from '@/lib/site';
 
 /**
  * Next.js MetadataRoute.Sitemap handler.
@@ -17,11 +17,20 @@ import { CONTENT_UPDATED, LEGAL, SITE } from '@/lib/site';
 export default async function sitemap() {
   const contentUpdated = new Date(`${CONTENT_UPDATED}T00:00:00Z`);
   const legalUpdated = new Date(`${LEGAL.effectiveDate}T00:00:00Z`);
+  const developerUpdated = new Date(`${DEVELOPER_UPDATED}T00:00:00Z`);
   const fallbackModified = contentUpdated;
 
   const staticRoutes = [
     { path: '/', lastModified: contentUpdated, changeFrequency: 'weekly', priority: 1.0 },
     { path: '/about', lastModified: contentUpdated, changeFrequency: 'monthly', priority: 0.8 },
+    // Footer-linked only, and about a person rather than the studio, so it ranks below the studio's
+    // own pages and carries its own revision date.
+    {
+      path: '/developer',
+      lastModified: developerUpdated,
+      changeFrequency: 'monthly',
+      priority: 0.5,
+    },
     { path: '/services', lastModified: contentUpdated, changeFrequency: 'monthly', priority: 0.9 },
     { path: '/work', lastModified: contentUpdated, changeFrequency: 'weekly', priority: 0.9 },
     {
