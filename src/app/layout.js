@@ -23,7 +23,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={manrope.variable}>
+    <html lang="en" className={manrope.variable} data-scroll-behavior="smooth">
       <head>
         <JsonLd data={siteGraph()} />
         <link
