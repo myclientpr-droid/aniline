@@ -2,7 +2,11 @@
 
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { Lock, Mail } from 'lucide-react';
 import Button from '@/components/ui/Button';
+import FormField from '@/components/admin/FormField';
+import useCooldown from '@/components/admin/useCooldown';
+import { validateCredentials } from '@/lib/authValidation';
 
 export default function LoginForm() {
     const searchParams = useSearchParams();
@@ -14,34 +18,56 @@ export default function LoginForm() {
             ? requestedFrom
             : '/admin';
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [values, setValues] = useState({ email: '', password: '' });
+    const [touched, setTouched] = useState({});
+    const [attempted, setAttempted] = useState(false);
+    const [serverError, setServerError] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [startCooldown, cooldownLabel] = useCooldown();
 
-    const onSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
+    // Derived, so a field can never display an error that the current value no longer has.
+    const errors = validateCredentials(values);
+    const errorFor = (field) => (touched[field] || attempted ? errors[field] : undefined);
+
+    const setValue = (field) => (event) =>
+        setValues((current) => ({ ...current, [field]: event.target.value }));
+    const markTouched = (field) => () =>
+        setTouched((current) => ({ ...current, [field]: true }));
+
+    const onSubmit = async (event) => {
+        event.preventDefault();
+        setAttempted(true);
+        setServerError('');
+
+        if (Object.keys(errors).length > 0) {
+            const firstInvalid = Object.keys(errors)[0];
+            document.getElementById(`login-${firstInvalid}`)?.focus();
+            return;
+        }
+
         setSubmitting(true);
         try {
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify(values),
             });
             const data = await res.json().catch(() => ({}));
             if (!res.ok || !data.ok) {
-                setError(data.error || 'Login failed. Please try again.');
+                // The limiter allows 5 attempts per 15 minutes and retries push the window
+                // further out, so the wait is surfaced instead of swallowed by a banner.
+                if (res.status === 429) {
+                    startCooldown(Number(res.headers.get('Retry-After')) || 60);
+                }
+                setServerError(data.error || 'Login failed. Please try again.');
                 return;
             }
             const destination = new URL(from, window.location.origin);
             window.location.assign(
-                destination.origin === window.location.origin
-                    ? destination.href
-                    : '/admin'
+                destination.origin === window.location.origin ? destination.href : '/admin'
             );
         } catch {
-            setError('Network error. Please check your connection.');
+            setServerError('Network error. Please check your connection.');
         } finally {
             setSubmitting(false);
         }
@@ -49,47 +75,55 @@ export default function LoginForm() {
 
     return (
         <form onSubmit={onSubmit} noValidate className="space-y-5">
-            <div>
-                <label htmlFor="email" className="block text-sm font-medium text-navy mb-1.5">
-                    Email
-                </label>
-                <input
-                    id="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-md border border-navy/15 bg-white px-3.5 py-2.5 text-navy focus:outline-none focus:ring-2 focus:ring-orange focus:border-orange"
-                />
+            <FormField
+                id="login-email"
+                tone="dark"
+                label="Email"
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                icon={Mail}
+                value={values.email}
+                onChange={setValue('email')}
+                onBlur={markTouched('email')}
+                error={errorFor('email')}
+                required
+            />
+
+            <FormField
+                id="login-password"
+                tone="dark"
+                label="Password"
+                autoComplete="current-password"
+                icon={Lock}
+                revealable
+                value={values.password}
+                onChange={setValue('password')}
+                onBlur={markTouched('password')}
+                error={errorFor('password')}
+                required
+            />
+
+            <div aria-live="polite">
+                {serverError && (
+                    <p
+                        role="alert"
+                        className="rounded-md border border-red-400/40 bg-red-500/10 px-4 py-3 text-sm text-red-300"
+                    >
+                        {serverError}
+                    </p>
+                )}
             </div>
 
-            <div>
-                <label htmlFor="password" className="block text-sm font-medium text-navy mb-1.5">
-                    Password
-                </label>
-                <input
-                    id="password"
-                    type="password"
-                    autoComplete="current-password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full rounded-md border border-navy/15 bg-white px-3.5 py-2.5 text-navy focus:outline-none focus:ring-2 focus:ring-orange focus:border-orange"
-                />
-            </div>
-
-            {error && (
-                <div
-                    role="alert"
-                    className="rounded-md border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm"
-                >
-                    {error}
-                </div>
-            )}
-
-            <Button type="submit" variant="primary" size="lg" disabled={submitting} className="w-full">
-                {submitting ? 'Signing in\u2026' : 'Sign in'}
+            <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                className="w-full"
+                disabled={submitting || Boolean(cooldownLabel)}
+                loading={submitting}
+            >
+                {cooldownLabel ?? (submitting ? 'Signing in\u2026' : 'Sign in')}
             </Button>
         </form>
     );

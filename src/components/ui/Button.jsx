@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Spinner from '@/components/ui/Spinner';
 
 const base =
     'inline-flex items-center justify-center gap-2 rounded-md font-semibold tracking-tight transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-orange disabled:opacity-50 disabled:pointer-events-none';
@@ -31,6 +32,7 @@ const variants = {
  *   size?: 'sm'|'md'|'lg',
  *   className?: string,
  *   disabled?: boolean,
+ *   loading?: boolean,
  *   onClick?: (e: React.MouseEvent) => void,
  *   'aria-label'?: string,
  * }} props
@@ -43,20 +45,31 @@ export default function Button({
     size = 'md',
     className = '',
     disabled = false,
+    loading = false,
     onClick,
     ...rest
 }) {
     const cls = `${base} ${sizes[size]} ${variants[variant]} ${className}`.trim();
+    const content = loading ? <Spinner /> : null;
 
     if (href) {
         return (
             <Link href={href} className={cls} {...rest}>
+                {content}
                 {children}
             </Link>
         );
     }
     return (
-        <button type={type} className={cls} disabled={disabled} onClick={onClick} {...rest}>
+        <button
+            type={type}
+            className={cls}
+            disabled={disabled || loading}
+            aria-busy={loading || undefined}
+            onClick={onClick}
+            {...rest}
+        >
+            {content}
             {children}
         </button>
     );

@@ -68,6 +68,7 @@ export const TEAM_ROLES = [
     'Director',
     'Producer',
     'Cinematographer',
+    'Videographer',
     'Photographer',
     'Editor',
     'Colorist',
