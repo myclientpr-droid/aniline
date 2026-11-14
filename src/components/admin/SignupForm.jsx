@@ -7,10 +7,12 @@ import Button from '@/components/ui/Button';
 import FormField from '@/components/admin/FormField';
 import PasswordStrength from '@/components/admin/PasswordStrength';
 import useCooldown from '@/components/admin/useCooldown';
+import { useToast } from '@/components/admin/ToastProvider';
 import { validateAccount } from '@/lib/authValidation';
 
 export default function SignupForm() {
     const router = useRouter();
+    const toast = useToast();
     const [values, setValues] = useState({ name: '', email: '', password: '' });
     const [touched, setTouched] = useState({});
     const [attempted, setAttempted] = useState(false);
@@ -48,13 +50,18 @@ export default function SignupForm() {
                 if (response.status === 429) {
                     startCooldown(Number(response.headers.get('Retry-After')) || 60);
                 }
-                setServerError(data.error || 'Signup failed. Please try again.');
+                const message = data.error || 'Signup failed. Please try again.';
+                setServerError(message);
+                toast.error(message);
                 return;
             }
+            toast.success('Account created.');
             router.replace('/admin/projects');
             router.refresh();
         } catch {
-            setServerError('Network error. Please check your connection.');
+            const message = 'Network error. Please check your connection.';
+            setServerError(message);
+            toast.error(message);
         } finally {
             setSubmitting(false);
         }

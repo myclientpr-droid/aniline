@@ -14,42 +14,42 @@ const FALLBACK_SERVICES = [
     {
         _id: 'f1',
         title: 'Documentary Video Production',
-        slug: '',
+        slug: 'documentary-video-production',
         shortDescription:
             'Long-form and short documentary work, filmed and edited end-to-end.',
     },
     {
         _id: 'f2',
         title: 'Promotional & Commercial Video',
-        slug: '',
+        slug: 'promotional-video-production',
         shortDescription:
             'Brand, product, and campaign films for businesses and organizations.',
     },
     {
         _id: 'f3',
         title: 'Wedding Films',
-        slug: '',
+        slug: 'wedding-films',
         shortDescription:
             'Cinematic wedding coverage built around the people and the day.',
     },
     {
         _id: 'f4',
         title: 'Music Video Production',
-        slug: '',
+        slug: 'music-video-production',
         shortDescription:
             'Music videos that match the tone, rhythm, and identity of the artist.',
     },
     {
         _id: 'f5',
         title: 'NGO & Charity Video',
-        slug: '',
+        slug: 'charity-ngo-video-production',
         shortDescription:
             'Program documentation and campaign films for humanitarian work.',
     },
     {
         _id: 'f6',
         title: 'Photography & Post-Production',
-        slug: '',
+        slug: 'photography',
         shortDescription:
             'Event, portrait, and documentary photography plus editing and color.',
     },

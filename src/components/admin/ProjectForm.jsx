@@ -119,15 +119,19 @@ export default function ProjectForm({ project }) {
             });
             const data = await res.json().catch(() => ({}));
             if (!res.ok || !data.ok) {
+                const message = data.error || 'Could not save. Please try again.';
                 if (data.errors) setErrors(data.errors);
-                setFormError(data.error || 'Could not save. Please try again.');
+                setFormError(message);
+                toast.error(message);
                 return;
             }
             toast.success(isEdit ? 'Project updated.' : 'Project created.');
             router.push('/admin/projects');
             router.refresh();
         } catch {
-            setFormError('Network error. Please try again.');
+            const message = 'Network error. Please try again.';
+            setFormError(message);
+            toast.error(message);
         } finally {
             setSubmitting(false);
         }

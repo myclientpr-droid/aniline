@@ -1,6 +1,5 @@
 import Sidebar from '@/components/admin/Sidebar';
 import TopBar from '@/components/admin/TopBar';
-import ToastProvider from '@/components/admin/ToastProvider';
 import { getAuthorizedAdminUser } from '@/lib/adminAccess';
 import { redirect } from 'next/navigation';
 
@@ -19,9 +18,7 @@ export default async function AdminPanelLayout({ children }) {
 
                 <div className="flex-1 min-w-0 flex flex-col">
                     <TopBar userEmail={user.email} role={user.role} />
-                    <main className="flex-1 p-4 md:p-8">
-                        <ToastProvider>{children}</ToastProvider>
-                    </main>
+                    <main className="flex-1 p-4 md:p-8">{children}</main>
                 </div>
             </div>
         </div>

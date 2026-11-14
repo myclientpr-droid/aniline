@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { LogOut } from 'lucide-react';
+import { useToast } from '@/components/admin/ToastProvider';
 
 export default function LogoutButton() {
+    const toast = useToast();
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState('');
 
@@ -18,7 +20,9 @@ export default function LogoutButton() {
                 new URL('/admin/login', window.location.origin).href
             );
         } catch {
-            setError('Could not sign out. Please try again.');
+            const message = 'Could not sign out. Please try again.';
+            setError(message);
+            toast.error(message);
             setBusy(false);
         }
     };

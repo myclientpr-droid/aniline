@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react';
 import { Loader2, Upload, X, Image as ImageIcon } from 'lucide-react';
 import { buildImageUrl } from '@/lib/cloudinary.js';
+import { useToast } from '@/components/admin/ToastProvider';
 
 const MAX_BYTES = 25 * 1024 * 1024;
 
@@ -21,6 +22,7 @@ export default function ImageUploadField({
     hint,
     error,
 }) {
+    const toast = useToast();
     const fileInputRef = useRef(null);
     const [uploading, setUploading] = useState(false);
     const [statusError, setStatusError] = useState('');
@@ -40,6 +42,7 @@ export default function ImageUploadField({
         if (!file) return;
         if (file.size > MAX_BYTES) {
             setStatusError('File is larger than 25 MB.');
+            toast.error('File is larger than 25 MB.');
             return;
         }
 
@@ -85,8 +88,11 @@ export default function ImageUploadField({
                 width: data.width,
                 height: data.height,
             });
+            toast.success('Upload complete.');
         } catch (err) {
-            setStatusError(err.message || 'Upload failed.');
+            const message = err.message || 'Upload failed.';
+            setStatusError(message);
+            toast.error(message);
         } finally {
             setUploading(false);
             if (fileInputRef.current) fileInputRef.current.value = '';

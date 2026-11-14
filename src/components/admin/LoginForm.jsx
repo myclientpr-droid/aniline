@@ -6,9 +6,11 @@ import { Lock, Mail } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import FormField from '@/components/admin/FormField';
 import useCooldown from '@/components/admin/useCooldown';
+import { useToast } from '@/components/admin/ToastProvider';
 import { validateCredentials } from '@/lib/authValidation';
 
 export default function LoginForm() {
+    const toast = useToast();
     const searchParams = useSearchParams();
     const requestedFrom = searchParams.get('from');
     const from =
@@ -59,7 +61,9 @@ export default function LoginForm() {
                 if (res.status === 429) {
                     startCooldown(Number(res.headers.get('Retry-After')) || 60);
                 }
-                setServerError(data.error || 'Login failed. Please try again.');
+                const message = data.error || 'Login failed. Please try again.';
+                setServerError(message);
+                toast.error(message);
                 return;
             }
             const destination = new URL(from, window.location.origin);
@@ -67,7 +71,9 @@ export default function LoginForm() {
                 destination.origin === window.location.origin ? destination.href : '/admin'
             );
         } catch {
-            setServerError('Network error. Please check your connection.');
+            const message = 'Network error. Please check your connection.';
+            setServerError(message);
+            toast.error(message);
         } finally {
             setSubmitting(false);
         }

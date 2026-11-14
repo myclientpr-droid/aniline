@@ -107,15 +107,19 @@ export default function VideoForm({ film }) {
             });
             const data = await res.json().catch(() => ({}));
             if (!res.ok || !data.ok) {
+                const message = data.error || 'Could not save. Please try again.';
                 if (data.errors) setErrors(data.errors);
-                setFormError(data.error || 'Could not save. Please try again.');
+                setFormError(message);
+                toast.error(message);
                 return;
             }
             toast.success(isEdit ? 'Film updated.' : 'Film added.');
             router.push('/admin/videos');
             router.refresh();
         } catch {
-            setFormError('Network error. Please try again.');
+            const message = 'Network error. Please try again.';
+            setFormError(message);
+            toast.error(message);
         } finally {
             setSubmitting(false);
         }

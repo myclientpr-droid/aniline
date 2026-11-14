@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Button from '@/components/ui/Button';
+import { useToast } from '@/components/admin/ToastProvider';
 import { PROJECT_CATEGORIES } from '@/lib/constants';
 
 const INITIAL = {
@@ -26,6 +27,7 @@ const INITIAL = {
  * }} props
  */
 export default function InquiryForm({ successTitle, successMessage }) {
+    const toast = useToast();
     const [values, setValues] = useState(INITIAL);
     const [errors, setErrors] = useState({});
     const [submitting, setSubmitting] = useState(false);
@@ -59,14 +61,19 @@ export default function InquiryForm({ successTitle, successMessage }) {
             const data = await res.json().catch(() => ({}));
 
             if (!res.ok || !data.ok) {
+                const message = data.error || 'Something went wrong. Please try again.';
                 if (data.errors) setErrors(data.errors);
-                setFormError(data.error || 'Something went wrong. Please try again.');
+                setFormError(message);
+                toast.error(message);
                 return;
             }
+            toast.success('Inquiry sent.');
             setSubmitted(true);
             setValues(INITIAL);
         } catch {
-            setFormError('Network error. Please check your connection and try again.');
+            const message = 'Network error. Please check your connection and try again.';
+            setFormError(message);
+            toast.error(message);
         } finally {
             setSubmitting(false);
         }

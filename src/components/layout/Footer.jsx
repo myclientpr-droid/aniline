@@ -40,10 +40,10 @@ export default function Footer() {
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-4">
-            <Link href="/" className="text-white font-extrabold text-xl tracking-tight">
+            <Link href="/" className="text-white font-extrabold text-xl tracking-tight" aria-label='Aniline Brand logo'>
               <Image
                 src="/aniline-5555x1330.png"
-                alt=""
+                alt="aniline logo"
                 width={5555}
                 height={1330}
                 className="h-8 w-auto"

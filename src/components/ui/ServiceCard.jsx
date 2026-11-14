@@ -43,11 +43,10 @@ export default function ServiceCard({ service, index }) {
 
             <Link
                 href={href}
-                className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-navy hover:text-orange transition-colors"
-                aria-label={`Learn more about ${title}`}
+                className="mt-6 inline-flex items-start gap-1.5 text-sm font-semibold text-navy hover:text-orange transition-colors"
             >
-                Learn more
-                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                <span>Learn more about {title}</span>
+                <ArrowUpRight className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
             </Link>
         </article>
     );

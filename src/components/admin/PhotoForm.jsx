@@ -99,15 +99,19 @@ export default function PhotoForm({ photo }) {
             });
             const data = await res.json().catch(() => ({}));
             if (!res.ok || !data.ok) {
+                const message = data.error || 'Could not save. Please try again.';
                 if (data.errors) setErrors(data.errors);
-                setFormError(data.error || 'Could not save. Please try again.');
+                setFormError(message);
+                toast.error(message);
                 return;
             }
             toast.success(isEdit ? 'Photo updated.' : 'Photo added.');
             router.push('/admin/photos');
             router.refresh();
         } catch {
-            setFormError('Network error. Please try again.');
+            const message = 'Network error. Please try again.';
+            setFormError(message);
+            toast.error(message);
         } finally {
             setSubmitting(false);
         }

@@ -3,15 +3,16 @@
 import { useCallback, useState } from 'react';
 import Button from '@/components/ui/Button';
 import FormField from '@/components/admin/FormField';
+import { useToast } from '@/components/admin/ToastProvider';
 
 export default function MemberAccounts({ initialUsers }) {
+    const toast = useToast();
     const [users, setUsers] = useState(initialUsers);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
-    const [notice, setNotice] = useState('');
 
     const loadUsers = useCallback(async () => {
         setError('');
@@ -30,7 +31,6 @@ export default function MemberAccounts({ initialUsers }) {
     const createAccount = async (event) => {
         event.preventDefault();
         setError('');
-        setNotice('');
         setSubmitting(true);
         try {
             const response = await fetch('/api/admin/users', {
@@ -45,10 +45,12 @@ export default function MemberAccounts({ initialUsers }) {
             setName('');
             setEmail('');
             setPassword('');
-            setNotice('Member account created.');
+            toast.success('Member account created.');
             await loadUsers();
         } catch (err) {
-            setError(err.message || 'Could not create the account.');
+            const message = err.message || 'Could not create the account.';
+            setError(message);
+            toast.error(message);
         } finally {
             setSubmitting(false);
         }
@@ -57,7 +59,6 @@ export default function MemberAccounts({ initialUsers }) {
     const removeAccount = async (user) => {
         if (!window.confirm(`Remove the account for ${user.email}?`)) return;
         setError('');
-        setNotice('');
         try {
             const response = await fetch(`/api/admin/users/${user.id}`, {
                 method: 'DELETE',
@@ -66,10 +67,12 @@ export default function MemberAccounts({ initialUsers }) {
             if (!response.ok || !data.ok) {
                 throw new Error(data.error || 'Could not remove the account.');
             }
-            setNotice('Member account removed.');
+            toast.success('Member account removed.');
             await loadUsers();
         } catch (err) {
-            setError(err.message || 'Could not remove the account.');
+            const message = err.message || 'Could not remove the account.';
+            setError(message);
+            toast.error(message);
         }
     };
 
@@ -112,9 +115,6 @@ export default function MemberAccounts({ initialUsers }) {
                 </div>
                 {error && (
                     <p role="alert" className="text-red-700 text-sm">{error}</p>
-                )}
-                {notice && (
-                    <p role="status" className="text-green-700 text-sm">{notice}</p>
                 )}
                 <Button type="submit" disabled={submitting}>
                     {submitting ? 'Creating…' : 'Create member account'}
